@@ -1,0 +1,179 @@
+{
+  "n_splits": 5,
+  "classes": [
+    "BENIGN",
+    "COAP_AMPLIFICATION",
+    "CREDENTIAL_BRUTEFORCE",
+    "DNS_AMPLIFICATION",
+    "HTTP_FLOOD",
+    "ICMP_FLOOD",
+    "MIRAI_COORDINATED",
+    "MQTT_MALFORMED",
+    "MQTT_SUBSCRIBE_FLOOD",
+    "PORT_SCAN",
+    "SLOWLORIS",
+    "SSDP_AMPLIFICATION",
+    "SYN_FLOOD",
+    "UDP_FLOOD"
+  ],
+  "models": {
+    "rf": {
+      "train_s_total": 375.23809146881104,
+      "accuracy_mean": 0.9863897425721865,
+      "accuracy_std": 0.01847993423655391,
+      "macro_f1_mean": 0.9862508015066066,
+      "macro_f1_std": 0.014331241308335652,
+      "per_class": {
+        "BENIGN": {
+          "f1_mean": 0.9409319143892917,
+          "recall_mean": 0.9238373899941428,
+          "testable_folds": 5
+        },
+        "COAP_AMPLIFICATION": {
+          "f1_mean": 0.9993096226884656,
+          "recall_mean": 0.9996726106067358,
+          "testable_folds": 3
+        },
+        "CREDENTIAL_BRUTEFORCE": {
+          "f1_mean": 0.9999549435423629,
+          "recall_mean": 0.9999553067148474,
+          "testable_folds": 4
+        },
+        "DNS_AMPLIFICATION": {
+          "f1_mean": 0.9990367426265552,
+          "recall_mean": 0.9991455602458713,
+          "testable_folds": 3
+        },
+        "HTTP_FLOOD": {
+          "f1_mean": 1.0,
+          "recall_mean": 1.0,
+          "testable_folds": 3
+        },
+        "ICMP_FLOOD": {
+          "f1_mean": 0.9944126482777833,
+          "recall_mean": 0.9975389732978854,
+          "testable_folds": 4
+        },
+        "MIRAI_COORDINATED": {
+          "f1_mean": 0.8777080120181951,
+          "recall_mean": 0.9415042423343895,
+          "testable_folds": 3
+        },
+        "MQTT_MALFORMED": {
+          "f1_mean": 1.0,
+          "recall_mean": 1.0,
+          "testable_folds": 4
+        },
+        "MQTT_SUBSCRIBE_FLOOD": {
+          "f1_mean": 1.0,
+          "recall_mean": 1.0,
+          "testable_folds": 4
+        },
+        "PORT_SCAN": {
+          "f1_mean": 0.9996194824961948,
+          "recall_mean": 1.0,
+          "testable_folds": 4
+        },
+        "SLOWLORIS": {
+          "f1_mean": 0.9914589706832655,
+          "recall_mean": 0.9831428236466486,
+          "testable_folds": 3
+        },
+        "SSDP_AMPLIFICATION": {
+          "f1_mean": 0.9995932122961888,
+          "recall_mean": 0.9996056089662508,
+          "testable_folds": 4
+        },
+        "SYN_FLOOD": {
+          "f1_mean": 0.9855957875157708,
+          "recall_mean": 0.9996563782475493,
+          "testable_folds": 4
+        },
+        "UDP_FLOOD": {
+          "f1_mean": 0.9913868000037662,
+          "recall_mean": 0.9839484828174506,
+          "testable_folds": 4
+        }
+      }
+    },
+    "xgb": {
+      "train_s_total": 475.008047580719,
+      "accuracy_mean": 0.9822664452475424,
+      "accuracy_std": 0.02044575682686004,
+      "macro_f1_mean": 0.9584595739243937,
+      "macro_f1_std": 0.048381352946232914,
+      "per_class": {
+        "BENIGN": {
+          "f1_mean": 0.9177648205351645,
+          "recall_mean": 0.9251389596410527,
+          "testable_folds": 5
+        },
+        "COAP_AMPLIFICATION": {
+          "f1_mean": 0.9992424879323525,
+          "recall_mean": 0.9995536547552386,
+          "testable_folds": 3
+        },
+        "CREDENTIAL_BRUTEFORCE": {
+          "f1_mean": 0.9999470532924221,
+          "recall_mean": 0.9999697994684706,
+          "testable_folds": 4
+        },
+        "DNS_AMPLIFICATION": {
+          "f1_mean": 0.9990542020873718,
+          "recall_mean": 0.9991803981831198,
+          "testable_folds": 3
+        },
+        "HTTP_FLOOD": {
+          "f1_mean": 0.9998641857938341,
+          "recall_mean": 1.0,
+          "testable_folds": 3
+        },
+        "ICMP_FLOOD": {
+          "f1_mean": 0.8928845919792376,
+          "recall_mean": 0.9996517760981442,
+          "testable_folds": 4
+        },
+        "MIRAI_COORDINATED": {
+          "f1_mean": 0.9951709259119053,
+          "recall_mean": 0.9984739252362713,
+          "testable_folds": 3
+        },
+        "MQTT_MALFORMED": {
+          "f1_mean": 1.0,
+          "recall_mean": 1.0,
+          "testable_folds": 4
+        },
+        "MQTT_SUBSCRIBE_FLOOD": {
+          "f1_mean": 0.9138998380089693,
+          "recall_mean": 1.0,
+          "testable_folds": 4
+        },
+        "PORT_SCAN": {
+          "f1_mean": 1.0,
+          "recall_mean": 1.0,
+          "testable_folds": 4
+        },
+        "SLOWLORIS": {
+          "f1_mean": 0.839578517639675,
+          "recall_mean": 0.7824483824386421,
+          "testable_folds": 3
+        },
+        "SSDP_AMPLIFICATION": {
+          "f1_mean": 0.9996252050665451,
+          "recall_mean": 0.9996695699661846,
+          "testable_folds": 4
+        },
+        "SYN_FLOOD": {
+          "f1_mean": 0.9989378879615797,
+          "recall_mean": 0.9996437284645151,
+          "testable_folds": 4
+        },
+        "UDP_FLOOD": {
+          "f1_mean": 0.9916305239884362,
+          "recall_mean": 0.9839484828174506,
+          "testable_folds": 4
+        }
+      }
+    }
+  }
+}

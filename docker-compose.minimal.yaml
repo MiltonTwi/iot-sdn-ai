@@ -1,0 +1,9 @@
+services:
+  controller:
+    volumes:
+      - ../iot/controller:/home/auser/iot/controller
+    command: >-
+      infra/controller/dc_switch.py
+      iot/controller/iot_mitigation.py
+      iot/controller/iot_antispoof.py
+      --observe-links

@@ -1,0 +1,7 @@
+{
+  "victim_pkts_baseline": 895587,
+  "victim_pkts_mitigated": 0,
+  "throughput_reduction_pct": 100.0,
+  "drop_rules_installed": 10,
+  "method": "UDP flood attacker->victim; tcpdump count at victim before/after DROP"
+}

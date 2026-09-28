@@ -1,0 +1,85 @@
+# ════════════════════════════════════════════════════════════════════
+# Overlay overrides — extiende SdnShare/docker-compose.yaml
+# Se aplica con:
+#   docker compose -f SdnShare/docker-compose.yaml -f docker-compose.override.yaml up -d
+# (el Makefile.iot lo hace automáticamente)
+# ════════════════════════════════════════════════════════════════════
+
+services:
+  # añade el iot/ al container mininet (paths relativos al base SdnShare/)
+  mininet:
+    stdin_open: true
+    tty: true
+    entrypoint: ["bash", "-c", "service openvswitch-switch start; tail -f /dev/null"]
+    volumes:
+      - ../iot:/root/iot
+      - ../data:/root/data
+
+  # controller: solo dc_switch + apps IoT (sin monitor_* para evitar OF flapping
+  # en WSL2). Si necesitas Grafana populated, añadelo de vuelta y sube POLLTIME).
+  controller:
+    volumes:
+      - ../iot/controller:/home/auser/iot/controller
+    environment:
+      - PROMETHEUS_POLLTIME=600
+      - INFLUXDB_POLLTIME=600
+      - GRAPHITE_POLLTIME=600
+    command: >-
+      iot/controller/iot_l2_switch.py
+      infra/monitoring/monitor_prometheus.py
+      iot/controller/iot_mitigation.py
+      iot/controller/iot_antispoof.py
+      --observe-links
+    healthcheck:
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  # bridge ML → controlador (carga modelo, llama /iot/mitigate)
+  detector:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ../dashboard:/app/dashboard
+      - ../ml_extra:/app/ml_extra
+      - ../data:/app/data
+    environment:
+      - CONTROLLER_URL=http://controller:8080
+    command: >-
+      sh -c "pip install --quiet joblib numpy scikit-learn &&
+             python dashboard/detector_service.py
+             --csv /app/data/processed/${RUN:-run_latest}/dataset.csv --watch"
+    depends_on:
+      controller:
+        condition: service_healthy
+    profiles:
+      - detector
+
+  # dashboard FastAPI — paths relativos al base yaml (SdnShare/), por eso ../
+  dashboard:
+    build:
+      context: ..
+      dockerfile: dashboard/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../iot:/app/iot
+      - ../ml_extra/artifacts:/app/ml_extra/artifacts
+      - /tmp:/tmp
+    depends_on:
+      controller:
+        condition: service_healthy
+    profiles:
+      - monitor
+
+  # alertas IoT extra en prometheus (los volumes del base ya están)
+  prometheus:
+    volumes:
+      - ../dashboard/prometheus/alerts_iot.yaml:/etc/prometheus/alerts_iot.yaml
+
+  # dashboard IoT extra en grafana (los volumes del base ya están)
+  grafana:
+    volumes:
+      - ../dashboard/grafana/iot-overview.json:/etc/grafana/dashboards/iot/iot-overview.json
+      - ../dashboard/grafana/provisioning/dashboards.yaml:/etc/grafana/provisioning/dashboards/iot.yaml

@@ -1,0 +1,14 @@
+{
+  "switches": [
+    {"name": "r1"},
+    {"name": "r2"},
+    {"name": "r3"},
+    {"name": "r4"}
+  ],
+  "links": [
+    {"source": "r1", "target": "r2"},
+    {"source": "r2", "target": "r3"},
+    {"source": "r3", "target": "r4"},
+    {"source": "r4", "target": "r1"}
+  ]
+}

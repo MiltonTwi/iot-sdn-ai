@@ -1,0 +1,58 @@
+{
+  "train_dataset": "data/processed/run_20260924-214452/dataset.csv",
+  "eval_dataset": "data/processed/cic_iot_2023/dataset.csv",
+  "intra_domain": {
+    "accuracy": 0.9009401214926237,
+    "f1_macro": 0.8508211822738706
+  },
+  "cross_domain": {
+    "accuracy": 0.01593,
+    "f1_macro": 0.004432264815139649
+  },
+  "drop": {
+    "accuracy": 0.8850101214926237,
+    "f1_macro": 0.8463889174587309
+  },
+  "common_features": [
+    "proto",
+    "duration",
+    "tot_fwd_pkts",
+    "tot_bwd_pkts",
+    "tot_pkts",
+    "tot_fwd_bytes",
+    "tot_bwd_bytes",
+    "tot_bytes",
+    "fwd_pkt_len_mean",
+    "fwd_pkt_len_std",
+    "fwd_pkt_len_max",
+    "fwd_pkt_len_min",
+    "bwd_pkt_len_mean",
+    "bwd_pkt_len_std",
+    "bwd_pkt_len_max",
+    "bwd_pkt_len_min",
+    "iat_mean",
+    "iat_std",
+    "iat_max",
+    "iat_min",
+    "fwd_iat_mean",
+    "bwd_iat_mean",
+    "syn_count",
+    "fin_count",
+    "rst_count",
+    "psh_count",
+    "ack_count",
+    "urg_count",
+    "fwd_pps",
+    "bwd_pps",
+    "down_up_ratio",
+    "byte_entropy",
+    "is_mqtt",
+    "is_coap",
+    "is_modbus",
+    "is_dns",
+    "is_ntp",
+    "is_ssdp",
+    "is_http"
+  ],
+  "missing_in_eval": []
+}

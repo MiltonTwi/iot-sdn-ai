@@ -1,0 +1,25 @@
+apiVersion: 1
+
+datasources:
+  - name: prometheus
+    type: prometheus
+    uid: edqgha3zfvzeod
+    url: http://prometheus:9090
+    access: proxy
+    isDefault: false
+
+  - name: graphite
+    type: graphite
+    uid: fdqgojaklqqyoa
+    url: http://graphite
+    access: proxy
+    jsonData:
+      graphiteVersion: "1.1"
+
+  - name: influxdb
+    type: influxdb
+    uid: edqgqekbjt2bkb
+    url: http://influxdb:8086
+    access: proxy
+    jsonData:
+      dbName: ryu_monitor

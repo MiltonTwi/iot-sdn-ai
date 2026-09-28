@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>IoT-SDN-AI Dashboard</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header>
+    <h1>IoT-SDN-AI</h1>
+    <span id="status" class="dot offline"></span>
+    <span id="ts" class="ts">--</span>
+  </header>
+
+  <section class="kpis">
+    <div class="kpi"><span class="label">PPS total</span><strong id="pps">0</strong></div>
+    <div class="kpi"><span class="label">BPS total</span><strong id="bps">0</strong></div>
+    <div class="kpi"><span class="label">Zonas</span><strong id="zones-count">0</strong></div>
+    <div class="kpi"><span class="label">Dispositivos</span><strong id="devs-count">0</strong></div>
+    <div class="kpi alert"><span class="label">Ataques activos</span><strong id="atk-active">0</strong></div>
+  </section>
+
+  <section>
+    <h2>Mapa de zonas</h2>
+    <div id="zones" class="grid"></div>
+  </section>
+
+  <section>
+    <h2>Ataques recientes</h2>
+    <table id="attacks">
+      <thead><tr><th>Etiqueta</th><th>Familia</th><th>Inicio</th><th>Duración</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Modelos ML</h2>
+    <table id="models">
+      <thead><tr><th>Modelo</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1</th><th>train(s)</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Dispositivos</h2>
+    <input id="dev-filter" placeholder="filtrar por nombre/zona/proto…">
+    <table id="devices">
+      <thead><tr><th>Nombre</th><th>Zona</th><th>IP</th><th>Tipo</th><th>Proto</th><th>Rate</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <footer>
+    <small>WebSocket: <code id="ws-url">ws://&lt;host&gt;/ws/feed</code></small>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

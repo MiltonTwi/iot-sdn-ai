@@ -1,0 +1,29 @@
+[project]
+name = "iot-sdn-ai"
+version = "0.1.0"
+description = "Overlay IoT (60+ devices, 14 attacks, 5 ML models, dashboard) sobre SdnShare"
+requires-python = ">=3.10"
+
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+ml = [
+    "scikit-learn>=1.3",
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "joblib>=1.3",
+    "xgboost>=2.0",
+]
+dashboard = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+]
+all = [
+    "iot-sdn-ai[ml,dashboard]",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

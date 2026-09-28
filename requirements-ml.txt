@@ -1,0 +1,13 @@
+# Versiones exactas del entorno de análisis (VM Ubuntu 22.04, Python 3.10).
+# Fijadas: los modelos .joblib y el fold-0 de StratifiedGroupKFold dependen de ellas.
+joblib==1.5.3
+matplotlib==3.10.9
+numpy==2.2.6
+pandas==2.3.3
+PyYAML==5.4.1
+reportlab==4.5.0
+scikit-learn==1.7.2
+scipy==1.15.3
+shap==0.49.1
+umap-learn==0.5.12
+xgboost==3.2.0

@@ -1,0 +1,5 @@
+=== MITIGATION CHAIN END-TO-END EVIDENCE ===
+Date: 2026-05-11
+
+[1] POST /iot/mitigate response:
+{\ÿ

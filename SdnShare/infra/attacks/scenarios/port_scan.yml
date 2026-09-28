@@ -1,0 +1,19 @@
+# Port Scan
+name: port_scan
+description: "Escaneo de puertos TCP contra un host objetivo"
+label: ATTACK
+
+target:
+  host: h4
+  ip: 10.1.1.4
+
+attackers:
+  - host: h1
+
+tool: nmap
+params:
+  flags: "-sS -p 1-1024"
+  duration_seconds: 120
+
+# Uso manual en Mininet CLI:
+# h1 nmap -sS -p 1-1024 10.1.1.4

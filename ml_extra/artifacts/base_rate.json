@@ -1,0 +1,404 @@
+{
+  "dataset": "../data/processed/run_20260924-214452/dataset.csv",
+  "n_test": 138280,
+  "n_benign": 4616,
+  "n_attack": 133664,
+  "observed_attack_prevalence": 0.9666184553080706,
+  "operating_thr": 0.102,
+  "models": {
+    "rf": {
+      "per_class": {
+        "BENIGN": {
+          "support": 4616,
+          "pr_auc": 0.9930500341160059,
+          "base_rate": 0.033381544691929416
+        },
+        "COAP_AMPLIFICATION": {
+          "support": 20790,
+          "pr_auc": 0.9999994707892905,
+          "base_rate": 0.1503471217818918
+        },
+        "CREDENTIAL_BRUTEFORCE": {
+          "support": 7960,
+          "pr_auc": 1.0,
+          "base_rate": 0.05756436216372578
+        },
+        "HTTP_FLOOD": {
+          "support": 26069,
+          "pr_auc": 1.0,
+          "base_rate": 0.18852328608620192
+        },
+        "ICMP_FLOOD": {
+          "support": 12073,
+          "pr_auc": 0.999999498501776,
+          "base_rate": 0.08730835984958056
+        },
+        "MIRAI_COORDINATED": {
+          "support": 9209,
+          "pr_auc": 0.9998862790413849,
+          "base_rate": 0.06659676019670234
+        },
+        "MQTT_MALFORMED": {
+          "support": 20208,
+          "pr_auc": 1.0,
+          "base_rate": 0.14613827017645356
+        },
+        "PORT_SCAN": {
+          "support": 103,
+          "pr_auc": 1.0,
+          "base_rate": 0.0007448654903095169
+        },
+        "SSDP_AMPLIFICATION": {
+          "support": 19670,
+          "pr_auc": 0.9980056024064838,
+          "base_rate": 0.1422476135377495
+        },
+        "SYN_FLOOD": {
+          "support": 13486,
+          "pr_auc": 0.999963869056935,
+          "base_rate": 0.09752675730402083
+        },
+        "UDP_FLOOD": {
+          "support": 4096,
+          "pr_auc": 1.0,
+          "base_rate": 0.029621058721434772
+        }
+      },
+      "macro_pr_auc": 0.999173159446534,
+      "detection": [
+        {
+          "attack_prevalence": 0.9666184553080706,
+          "observed": true,
+          "pr_auc": 0.999728902186707,
+          "roc_auc": 0.9960001970784033,
+          "at_0.5": {
+            "thr": 0.5,
+            "precision": 0.99974515418172,
+            "recall": 0.9978752693320565,
+            "f1": 0.9988093365982972,
+            "fpr": 0.007365684575389948,
+            "false_per_true_alert": 0.0002549107812265707
+          },
+          "at_op": {
+            "thr": 0.102,
+            "precision": 0.9986327366187502,
+            "recall": 0.9999775556619583,
+            "f1": 0.9993046936914036,
+            "fpr": 0.03964471403812825,
+            "false_per_true_alert": 0.0013691353498776757
+          },
+          "recall_at_p90": {
+            "target_precision": 0.9,
+            "recall": 1.0,
+            "thr": 0.0
+          }
+        },
+        {
+          "attack_prevalence": 0.5,
+          "observed": false,
+          "pr_auc": 0.9922092993168553,
+          "roc_auc": 0.9960001970784033,
+          "at_0.5": {
+            "thr": 0.5,
+            "precision": 0.9926727173751139,
+            "recall": 0.9978752693320565,
+            "f1": 0.9952671945858474,
+            "fpr": 0.007365684575389949,
+            "false_per_true_alert": 0.007381367994338896
+          },
+          "at_op": {
+            "thr": 0.102,
+            "precision": 0.9618662323869177,
+            "recall": 0.9999775556619583,
+            "f1": 0.9805517134395662,
+            "fpr": 0.03964471403812824,
+            "false_per_true_alert": 0.039645603857463074
+          },
+          "recall_at_p90": {
+            "target_precision": 0.9,
+            "recall": 0.9999925185539861,
+            "thr": 0.020000000000000018
+          }
+        },
+        {
+          "attack_prevalence": 0.1,
+          "observed": false,
+          "pr_auc": 0.9340127299166016,
+          "roc_auc": 0.996000197078403,
+          "at_0.5": {
+            "thr": 0.5,
+            "precision": 0.9377060210904188,
+            "recall": 0.9978752693320565,
+            "f1": 0.9668554381879321,
+            "fpr": 0.0073656845753899474,
+            "false_per_true_alert": 0.06643231194905007
+          },
+          "at_op": {
+            "thr": 0.102,
+            "precision": 0.7370226336801823,
+            "recall": 0.9999775556619583,
+            "f1": 0.8485964437046793,
+            "fpr": 0.03964471403812825,
+            "false_per_true_alert": 0.3568104347171679
+          },
+          "recall_at_p90": {
+            "target_precision": 0.9,
+            "recall": 0.9999476298779028,
+            "thr": 0.19333333333333336
+          }
+        },
+        {
+          "attack_prevalence": 0.01,
+          "observed": false,
+          "pr_auc": 0.5629686920250518,
+          "roc_auc": 0.9960001970784034,
+          "at_0.5": {
+            "thr": 0.5,
+            "precision": 0.57778238440555,
+            "recall": 0.9978752693320565,
+            "f1": 0.7318274386398144,
+            "fpr": 0.0073656845753899474,
+            "false_per_true_alert": 0.7307554314395506
+          },
+          "at_op": {
+            "thr": 0.102,
+            "precision": 0.20304919867394564,
+            "recall": 0.9999775556619583,
+            "f1": 0.3375563189052706,
+            "fpr": 0.03964471403812825,
+            "false_per_true_alert": 3.9249147818888463
+          },
+          "recall_at_p90": {
+            "target_precision": 0.9,
+            "recall": 0.0,
+            "thr": null
+          }
+        },
+        {
+          "attack_prevalence": 0.001,
+          "observed": false,
+          "pr_auc": 0.11331757158833518,
+          "roc_auc": 0.9960001970784029,
+          "at_0.5": {
+            "thr": 0.5,
+            "precision": 0.11941743456503745,
+            "recall": 0.9978752693320565,
+            "f1": 0.21330794386088703,
+            "fpr": 0.007365684575389946,
+            "false_per_true_alert": 7.373986626344559
+          },
+          "at_op": {
+            "thr": 0.102,
+            "precision": 0.02462692774677234,
+            "recall": 0.9999775556619583,
+            "f1": 0.04807001220559216,
+            "fpr": 0.03964471403812824,
+            "false_per_true_alert": 39.605958253605635
+          },
+          "recall_at_p90": {
+            "target_precision": 0.9,
+            "recall": 0.0,
+            "thr": null
+          }
+        }
+      ]
+    },
+    "xgb": {
+      "per_class": {
+        "BENIGN": {
+          "support": 4616,
+          "pr_auc": 0.9945296403553551,
+          "base_rate": 0.033381544691929416
+        },
+        "COAP_AMPLIFICATION": {
+          "support": 20790,
+          "pr_auc": 0.9999997559776009,
+          "base_rate": 0.1503471217818918
+        },
+        "CREDENTIAL_BRUTEFORCE": {
+          "support": 7960,
+          "pr_auc": 0.9999999999999999,
+          "base_rate": 0.05756436216372578
+        },
+        "HTTP_FLOOD": {
+          "support": 26069,
+          "pr_auc": 0.9999999999999999,
+          "base_rate": 0.18852328608620192
+        },
+        "ICMP_FLOOD": {
+          "support": 12073,
+          "pr_auc": 0.9999998220046443,
+          "base_rate": 0.08730835984958056
+        },
+        "MIRAI_COORDINATED": {
+          "support": 9209,
+          "pr_auc": 0.999982408281727,
+          "base_rate": 0.06659676019670234
+        },
+        "MQTT_MALFORMED": {
+          "support": 20208,
+          "pr_auc": 1.0,
+          "base_rate": 0.14613827017645356
+        },
+        "PORT_SCAN": {
+          "support": 103,
+          "pr_auc": 1.0,
+          "base_rate": 0.0007448654903095169
+        },
+        "SSDP_AMPLIFICATION": {
+          "support": 19670,
+          "pr_auc": 0.9999975852240579,
+          "base_rate": 0.1422476135377495
+        },
+        "SYN_FLOOD": {
+          "support": 13486,
+          "pr_auc": 0.9999957844485426,
+          "base_rate": 0.09752675730402083
+        },
+        "UDP_FLOOD": {
+          "support": 4096,
+          "pr_auc": 0.9952149894573371,
+          "base_rate": 0.029621058721434772
+        }
+      },
+      "macro_pr_auc": 0.999065453249933,
+      "detection": [
+        {
+          "attack_prevalence": 0.9666184553080706,
+          "observed": true,
+          "pr_auc": 0.999993806852464,
+          "roc_auc": 0.9998203488602166,
+          "at_0.5": {
+            "thr": 0.5,
+            "precision": 0.9997301794306785,
+            "recall": 0.9979201580081398,
+            "f1": 0.9988243487116509,
+            "fpr": 0.00779896013864818,
+            "false_per_true_alert": 0.0002698933921101165
+          },
+          "at_op": {
+            "thr": 0.102,
+            "precision": 0.9997229232347589,
+            "recall": 0.9987730428537228,
+            "f1": 0.9992477573062974,
+            "fpr": 0.008015597920277296,
+            "false_per_true_alert": 0.00027715355805243443
+          },
+          "recall_at_p90": {
+            "target_precision": 0.9,
+            "recall": 1.0,
+            "thr": 9.5367431640625e-07
+          }
+        },
+        {
+          "attack_prevalence": 0.5,
+          "observed": false,
+          "pr_auc": 0.999842743729571,
+          "roc_auc": 0.9998203488602166,
+          "at_0.5": {
+            "thr": 0.5,
+            "precision": 0.9922453893955807,
+            "recall": 0.9979201580081398,
+            "f1": 0.9950746831691787,
+            "fpr": 0.007798960138648182,
+            "false_per_true_alert": 0.00781521455004476
+          },
+          "at_op": {
+            "thr": 0.102,
+            "precision": 0.9920384501814452,
+            "recall": 0.9987730428537228,
+            "f1": 0.9953943554997452,
+            "fpr": 0.0080155979202773,
+            "false_per_true_alert": 0.008025444797123181
+          },
+          "recall_at_p90": {
+            "target_precision": 0.9,
+            "recall": 0.9994463729949725,
+            "thr": 3.1948089599609375e-05
+          }
+        },
+        {
+          "attack_prevalence": 0.1,
+          "observed": false,
+          "pr_auc": 0.9992233383647988,
+          "roc_auc": 0.9998203488602165,
+          "at_0.5": {
+            "thr": 0.5,
+            "precision": 0.9342852433504772,
+            "recall": 0.9979201580081398,
+            "f1": 0.9650548301059624,
+            "fpr": 0.0077989601386481795,
+            "false_per_true_alert": 0.07033693095040285
+          },
+          "at_op": {
+            "thr": 0.102,
+            "precision": 0.9326365888627431,
+            "recall": 0.9987730428537228,
+            "f1": 0.9645724743614648,
+            "fpr": 0.008015597920277298,
+            "false_per_true_alert": 0.07222900317410863
+          },
+          "recall_at_p90": {
+            "target_precision": 0.9,
+            "recall": 0.9988328944218339,
+            "thr": 0.006314098834991455
+          }
+        },
+        {
+          "attack_prevalence": 0.01,
+          "observed": false,
+          "pr_auc": 0.9977533940706607,
+          "roc_auc": 0.9998203488602168,
+          "at_0.5": {
+            "thr": 0.5,
+            "precision": 0.5637912170528282,
+            "recall": 0.9979201580081398,
+            "f1": 0.7205154926696946,
+            "fpr": 0.0077989601386481795,
+            "false_per_true_alert": 0.7737062404544311
+          },
+          "at_op": {
+            "thr": 0.102,
+            "precision": 0.557252378238082,
+            "recall": 0.9987730428537228,
+            "f1": 0.7153721859631309,
+            "fpr": 0.008015597920277296,
+            "false_per_true_alert": 0.7945190349151947
+          },
+          "recall_at_p90": {
+            "target_precision": 0.9,
+            "recall": 0.9959974263825713,
+            "thr": 0.9998877048492432
+          }
+        },
+        {
+          "attack_prevalence": 0.001,
+          "observed": false,
+          "pr_auc": 0.9963317674037415,
+          "roc_auc": 0.9998203488602166,
+          "at_0.5": {
+            "thr": 0.5,
+            "precision": 0.11354089463956722,
+            "recall": 0.9979201580081398,
+            "f1": 0.20388433269737968,
+            "fpr": 0.007798960138648178,
+            "false_per_true_alert": 7.807399335494717
+          },
+          "at_op": {
+            "thr": 0.102,
+            "precision": 0.11089647280760526,
+            "recall": 0.9987730428537228,
+            "f1": 0.19962773785271973,
+            "fpr": 0.008015597920277293,
+            "false_per_true_alert": 8.017419352326057
+          },
+          "recall_at_p90": {
+            "target_precision": 0.9,
+            "recall": 0.9959226119224324,
+            "thr": 0.999905526638031
+          }
+        }
+      ]
+    }
+  }
+}

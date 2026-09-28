@@ -1,0 +1,109 @@
+# Docker Compose for SDN DDoS Detection Lab
+services:
+  # ─── SDN Controller (Ryu + FlowManager) ─────────────────
+  controller:
+    image: martimy/ryu-flowmanager
+    environment:
+      - NETWORK_CONFIG_FILE=infra/configs/network_config.yaml
+      - GRAPHITE_SERVER=graphite
+      - GRAPHITE_POLLTIME=${GRAPHITE_POLLTIME:-30}
+      - INFLUXDB_HOST=influxdb
+      - INFLUXDB_POLLTIME=${INFLUXDB_POLLTIME:-30}
+      - PROMETHEUS_POLLTIME=${PROMETHEUS_POLLTIME:-30}
+    command: "infra/controller/dc_switch.py infra/monitoring/monitor_influxdb.py infra/monitoring/monitor_graphite.py infra/monitoring/monitor_prometheus.py --observe-links"
+    volumes:
+      - ./infra/controller:/home/auser/infra/controller
+      - ./infra/monitoring:/home/auser/infra/monitoring
+      - ./infra/configs:/home/auser/infra/configs
+    ports:
+      - "6633" # OpenFlow
+      - "6653" # OpenFlow
+      - "8080:8080" # FlowManager GUI
+    healthcheck:
+      test: [ "CMD", "python3", "-c", "import socket; s=socket.socket(); s.settimeout(2); s.connect(('localhost',8080)); s.close()" ]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 30s
+
+  # ─── Mininet ────────────────────────────────────────────
+  mininet:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.mininet
+    depends_on:
+      controller:
+        condition: service_healthy
+    tty: true
+    privileged: true
+    environment:
+      - SDN_CONTROLLER=controller
+      - HISTFILE=/root/.bash_history
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /lib/modules:/lib/modules
+      - ./infra/topology:/root/infra/topology
+      - ./infra/configs:/root/infra/configs
+      - ./infra/attacks:/root/infra/attacks
+      - ./scripts:/root/scripts
+
+  # ─── Graphite ───────────────────────────────────────────
+  graphite:
+    image: graphiteapp/graphite-statsd
+    volumes:
+      - ./infra/dashboards/carbon.conf:/opt/graphite/conf/carbon.conf
+      - ./infra/dashboards/storage-schemas.conf:/opt/graphite/conf/storage-schemas.conf
+      - ./infra/dashboards/storage-aggregation.conf:/opt/graphite/conf/storage-aggregation.conf
+      - ./graphite/storage:/opt/graphite/storage
+    ports:
+      - "2003-2004"
+      - "2023-2024"
+      - "9000:80"
+    profiles:
+      - graphite
+      - monitor
+
+  # ─── Prometheus ─────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus
+    user: "0"
+    volumes:
+      - ./infra/configs/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    profiles:
+      - prometheus
+      - monitor
+
+  # ─── InfluxDB ───────────────────────────────────────────
+  influxdb:
+    image: influxdb:1.8
+    volumes:
+      - ./influxdb/data:/var/lib/influxdb2
+      - ./influxdb/config:/etc/influxdb2
+    ports:
+      - "8086:8086"
+    profiles:
+      - influxdb
+      - monitor
+
+  # ─── Grafana ────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:10.4.3
+    user: "0"
+    volumes:
+      - ./grafana/grafana_data:/var/lib/grafana
+      - ./infra/dashboards/grafana.ini:/etc/grafana/grafana.ini
+      - ./infra/dashboards/provisioning:/etc/grafana/provisioning
+      - ./infra/dashboards/metrics-dashboard.json:/etc/grafana/dashboards/metrics-dashboard.json
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD:-admin}
+    ports:
+      - "3000:3000"
+    profiles:
+      - grafana
+      - monitor

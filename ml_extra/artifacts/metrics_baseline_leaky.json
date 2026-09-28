@@ -1,0 +1,43 @@
+{
+  "rf": {
+    "train_s": 17.11015224456787,
+    "accuracy": 0.9725665417507446,
+    "precision_macro": 0.9331650119102176,
+    "recall_macro": 0.8029758646344811,
+    "f1_macro": 0.8217543218749659,
+    "report": "                       precision    recall  f1-score   support\n\n               BENIGN       0.93      1.00      0.96     10000\n   COAP_AMPLIFICATION       0.67      0.18      0.28       351\nCREDENTIAL_BRUTEFORCE       1.00      0.89      0.94         9\n    DNS_AMPLIFICATION       1.00      0.21      0.35       307\n           HTTP_FLOOD       1.00      1.00      1.00      1035\n           ICMP_FLOOD       1.00      1.00      1.00      4623\n    MIRAI_COORDINATED       0.98      0.99      0.98     10000\n       MQTT_MALFORMED       1.00      1.00      1.00        12\n MQTT_SUBSCRIBE_FLOOD       1.00      1.00      1.00       378\n            PORT_SCAN       1.00      1.00      1.00        24\n            SLOWLORIS       1.00      1.00      1.00        18\n   SSDP_AMPLIFICATION       0.50      0.00      0.01       212\n            SYN_FLOOD       0.99      0.98      0.98     10000\n            UDP_FLOOD       1.00      1.00      1.00      4659\n\n             accuracy                           0.97     41628\n            macro avg       0.93      0.80      0.82     41628\n         weighted avg       0.97      0.97      0.97     41628\n"
+  },
+  "xgb": {
+    "train_s": 37.98904609680176,
+    "accuracy": 0.970740847506486,
+    "precision_macro": 0.9147463581541101,
+    "recall_macro": 0.7945036424122589,
+    "f1_macro": 0.8148468643901455,
+    "report": "                       precision    recall  f1-score   support\n\n               BENIGN       0.93      1.00      0.96     10000\n   COAP_AMPLIFICATION       0.67      0.18      0.28       351\nCREDENTIAL_BRUTEFORCE       1.00      0.78      0.88         9\n    DNS_AMPLIFICATION       0.96      0.21      0.34       307\n           HTTP_FLOOD       1.00      1.00      1.00      1035\n           ICMP_FLOOD       1.00      1.00      1.00      4623\n    MIRAI_COORDINATED       0.96      0.99      0.98     10000\n       MQTT_MALFORMED       1.00      1.00      1.00        12\n MQTT_SUBSCRIBE_FLOOD       1.00      1.00      1.00       378\n            PORT_SCAN       0.96      1.00      0.98        24\n            SLOWLORIS       1.00      1.00      1.00        18\n   SSDP_AMPLIFICATION       0.33      0.00      0.01       212\n            SYN_FLOOD       0.99      0.96      0.98     10000\n            UDP_FLOOD       1.00      1.00      1.00      4659\n\n             accuracy                           0.97     41628\n            macro avg       0.91      0.79      0.81     41628\n         weighted avg       0.97      0.97      0.96     41628\n"
+  },
+  "mlp": {
+    "train_s": 32.70459699630737,
+    "accuracy": 0.971365427116364,
+    "precision_macro": 0.8344150896951833,
+    "recall_macro": 0.7810869655136755,
+    "f1_macro": 0.789565998036858,
+    "report": "                       precision    recall  f1-score   support\n\n               BENIGN       0.93      1.00      0.96     10000\n   COAP_AMPLIFICATION       0.00      0.00      0.00       351\nCREDENTIAL_BRUTEFORCE       1.00      0.78      0.88         9\n    DNS_AMPLIFICATION       0.92      0.20      0.32       307\n           HTTP_FLOOD       1.00      1.00      1.00      1035\n           ICMP_FLOOD       1.00      1.00      1.00      4623\n    MIRAI_COORDINATED       0.97      0.99      0.98     10000\n       MQTT_MALFORMED       1.00      1.00      1.00        12\n MQTT_SUBSCRIBE_FLOOD       1.00      1.00      1.00       378\n            PORT_SCAN       0.92      1.00      0.96        24\n            SLOWLORIS       0.95      1.00      0.97        18\n   SSDP_AMPLIFICATION       0.00      0.00      0.00       212\n            SYN_FLOOD       0.99      0.97      0.98     10000\n            UDP_FLOOD       1.00      1.00      1.00      4659\n\n             accuracy                           0.97     41628\n            macro avg       0.83      0.78      0.79     41628\n         weighted avg       0.96      0.97      0.96     41628\n"
+  },
+  "isoforest": {
+    "train_s": 1.2156598567962646,
+    "type": "anomaly_binary",
+    "accuracy": 0.941169405208033,
+    "attack_recall": 0.9789743265460984,
+    "attack_precision": 0.9455217271811158,
+    "attack_f1": 0.9619572815533981
+  },
+  "autoencoder": {
+    "train_s": 1.4126925468444824,
+    "threshold": 0.0007176345923198824,
+    "type": "anomaly_binary",
+    "accuracy": 0.9299029499375421,
+    "attack_recall": 0.9791640318704945,
+    "attack_precision": 0.9320151679306609,
+    "attack_f1": 0.9550080177624275
+  }
+}

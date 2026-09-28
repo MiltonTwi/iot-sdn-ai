@@ -1,0 +1,16 @@
+{
+  "run_id": "",
+  "topology": "spine-leaf",
+  "network_config": "infra/configs/network_config.yaml",
+  "controller": "dc_switch.py",
+  "duration_seconds": 0,
+  "capture_interval_seconds": 2,
+  "attack_type": "none",
+  "attack_tool": "",
+  "attack_params": {},
+  "hosts_involved": [],
+  "label": "NORMAL",
+  "notes": "",
+  "created_at": "",
+  "created_by": ""
+}

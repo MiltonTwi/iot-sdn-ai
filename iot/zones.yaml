@@ -1,0 +1,155 @@
+# ═══════════════════════════════════════════════════════════════════
+# Catálogo IoT — 7 zonas, 63 dispositivos
+# ═══════════════════════════════════════════════════════════════════
+# Cada zona = 1 leaf-switch propio + N hosts.
+# Subred por zona: 10.10.{zone_id}.0/24
+# Gateway por zona: 10.10.{zone_id}.254
+# Servicios compartidos: zona 0 (servers/infra)
+#
+# Tipos de tráfico (consume iot/devices/{type}.py):
+#   mqtt-pub        → publish periódico a broker
+#   mqtt-sub        → subscribe a topic
+#   coap            → CoAP GET/POST a recurso
+#   http-poll       → GET periódico HTTP
+#   http-post       → POST telemetría JSON
+#   udp-stream      → flujo UDP constante (cámaras)
+#   tcp-modbus      → conexión TCP simil-Modbus (puerto 502)
+#   ntp             → query NTP periódica
+#   dns             → query DNS periódica
+# ═══════════════════════════════════════════════════════════════════
+
+infrastructure:
+  subnet: 10.10.0.0/24
+  gateway: 10.10.0.254
+  hosts:
+    - { name: mqtt_broker,  ip: 10.10.0.10, role: mqtt-broker,    port: 1883 }
+    - { name: coap_server,  ip: 10.10.0.11, role: coap-server,    port: 5683 }
+    - { name: http_server,  ip: 10.10.0.12, role: http-server,    port: 80 }
+    - { name: dns_server,   ip: 10.10.0.13, role: dns-server,     port: 53 }
+    - { name: ntp_server,   ip: 10.10.0.14, role: ntp-server,     port: 123 }
+    - { name: ssdp_server,  ip: 10.10.0.15, role: ssdp-server,    port: 1900 }
+    - { name: attacker,     ip: 10.10.0.99, role: attacker,       port: 0 }
+
+zones:
+  # ─── Zona 1: Smart Home (15 dispositivos) ─────────────────────────
+  - id: 1
+    name: smart_home
+    subnet: 10.10.1.0/24
+    gateway: 10.10.1.254
+    leaf_switch: s_iot_1
+    description: "Hogar inteligente — cámaras, bombillas, termostato, asistente de voz"
+    devices:
+      - { name: cam_front,     ip: 10.10.1.10, type: camera,           proto: udp-stream, dst: http_server,  rate_pps: 50,  payload: 1200 }
+      - { name: cam_back,      ip: 10.10.1.11, type: camera,           proto: udp-stream, dst: http_server,  rate_pps: 50,  payload: 1200 }
+      - { name: doorbell,      ip: 10.10.1.12, type: camera,           proto: udp-stream, dst: http_server,  rate_pps: 30,  payload: 800 }
+      - { name: baby_monitor,  ip: 10.10.1.13, type: camera,           proto: udp-stream, dst: http_server,  rate_pps: 60,  payload: 1000 }
+      - { name: bulb_living,   ip: 10.10.1.14, type: smart_bulb,       proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.2, payload: 80 }
+      - { name: bulb_kitchen,  ip: 10.10.1.15, type: smart_bulb,       proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.2, payload: 80 }
+      - { name: bulb_bedroom,  ip: 10.10.1.16, type: smart_bulb,       proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.2, payload: 80 }
+      - { name: thermostat,    ip: 10.10.1.17, type: thermostat,       proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.5, payload: 120 }
+      - { name: smoke_alarm,   ip: 10.10.1.18, type: alarm,            proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.1, payload: 60 }
+      - { name: door_lock,     ip: 10.10.1.19, type: lock,             proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.1, payload: 100 }
+      - { name: voice_assist,  ip: 10.10.1.20, type: voice_assistant,  proto: http-post,  dst: http_server,  rate_pps: 1,   payload: 400 }
+      - { name: smart_tv,      ip: 10.10.1.21, type: tv,               proto: http-poll,  dst: http_server,  rate_pps: 0.3, payload: 600 }
+      - { name: vacuum,        ip: 10.10.1.22, type: vacuum,           proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.5, payload: 150 }
+      - { name: smart_plug_a,  ip: 10.10.1.23, type: plug,             proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.3, payload: 70 }
+      - { name: smart_plug_b,  ip: 10.10.1.24, type: plug,             proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.3, payload: 70 }
+
+  # ─── Zona 2: IIoT / Industrial (12 dispositivos) ──────────────────
+  - id: 2
+    name: industrial
+    subnet: 10.10.2.0/24
+    gateway: 10.10.2.254
+    leaf_switch: s_iot_2
+    description: "Planta industrial — PLCs, SCADA, sensores de presión/flujo, robot"
+    devices:
+      - { name: plc_a,         ip: 10.10.2.10, type: plc,              proto: tcp-modbus, dst: http_server,  rate_pps: 5,   payload: 200 }
+      - { name: plc_b,         ip: 10.10.2.11, type: plc,              proto: tcp-modbus, dst: http_server,  rate_pps: 5,   payload: 200 }
+      - { name: scada_hmi,     ip: 10.10.2.12, type: scada,            proto: http-poll,  dst: http_server,  rate_pps: 2,   payload: 800 }
+      - { name: temp_sensor_1, ip: 10.10.2.13, type: sensor_temp,      proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 1,   payload: 90 }
+      - { name: temp_sensor_2, ip: 10.10.2.14, type: sensor_temp,      proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 1,   payload: 90 }
+      - { name: pressure,      ip: 10.10.2.15, type: sensor_pressure,  proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 2,   payload: 90 }
+      - { name: flow_meter,    ip: 10.10.2.16, type: sensor_flow,      proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 2,   payload: 90 }
+      - { name: vibration,     ip: 10.10.2.17, type: sensor_vibration, proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 5,   payload: 200 }
+      - { name: gas_detector,  ip: 10.10.2.18, type: sensor_gas,       proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 1,   payload: 120 }
+      - { name: energy_meter,  ip: 10.10.2.19, type: meter_energy,     proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.5, payload: 150 }
+      - { name: robot_arm,     ip: 10.10.2.20, type: robot,            proto: tcp-modbus, dst: http_server,  rate_pps: 10,  payload: 500 }
+      - { name: conveyor,      ip: 10.10.2.21, type: actuator,         proto: tcp-modbus, dst: http_server,  rate_pps: 3,   payload: 200 }
+
+  # ─── Zona 3: Healthcare (8 dispositivos) ──────────────────────────
+  - id: 3
+    name: healthcare
+    subnet: 10.10.3.0/24
+    gateway: 10.10.3.254
+    leaf_switch: s_iot_3
+    description: "Clínica — monitores de paciente, bombas de infusión, ECG"
+    devices:
+      - { name: patient_mon_1, ip: 10.10.3.10, type: patient_monitor,  proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 4,   payload: 250 }
+      - { name: patient_mon_2, ip: 10.10.3.11, type: patient_monitor,  proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 4,   payload: 250 }
+      - { name: ecg_unit,      ip: 10.10.3.12, type: ecg,              proto: udp-stream, dst: http_server,  rate_pps: 30,  payload: 400 }
+      - { name: infusion_pump, ip: 10.10.3.13, type: pump,             proto: coap,       dst: coap_server,  rate_pps: 0.5, payload: 200 }
+      - { name: glucose_mon,   ip: 10.10.3.14, type: glucose,          proto: coap,       dst: coap_server,  rate_pps: 0.2, payload: 100 }
+      - { name: oximeter,      ip: 10.10.3.15, type: oximeter,         proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 2,   payload: 100 }
+      - { name: smart_bed,     ip: 10.10.3.16, type: bed,              proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.5, payload: 180 }
+      - { name: drug_cabinet,  ip: 10.10.3.17, type: cabinet,          proto: http-post,  dst: http_server,  rate_pps: 0.1, payload: 300 }
+
+  # ─── Zona 4: Smart City (8 dispositivos) ──────────────────────────
+  - id: 4
+    name: smart_city
+    subnet: 10.10.4.0/24
+    gateway: 10.10.4.254
+    leaf_switch: s_iot_4
+    description: "Ciudad inteligente — semáforos, parking, alumbrado, EV chargers"
+    devices:
+      - { name: traffic_light, ip: 10.10.4.10, type: traffic,          proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.3, payload: 80 }
+      - { name: parking_a,     ip: 10.10.4.11, type: parking,          proto: coap,       dst: coap_server,  rate_pps: 0.5, payload: 60 }
+      - { name: parking_b,     ip: 10.10.4.12, type: parking,          proto: coap,       dst: coap_server,  rate_pps: 0.5, payload: 60 }
+      - { name: env_air,       ip: 10.10.4.13, type: sensor_air,       proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.5, payload: 120 }
+      - { name: streetlight_a, ip: 10.10.4.14, type: streetlight,      proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.2, payload: 70 }
+      - { name: waste_bin,     ip: 10.10.4.15, type: bin,              proto: coap,       dst: coap_server,  rate_pps: 0.05, payload: 80 }
+      - { name: cctv_city,     ip: 10.10.4.16, type: camera,           proto: udp-stream, dst: http_server,  rate_pps: 60,  payload: 1200 }
+      - { name: ev_charger,    ip: 10.10.4.17, type: charger,          proto: http-post,  dst: http_server,  rate_pps: 0.3, payload: 300 }
+
+  # ─── Zona 5: Wearables (6 dispositivos) ───────────────────────────
+  - id: 5
+    name: wearables
+    subnet: 10.10.5.0/24
+    gateway: 10.10.5.254
+    leaf_switch: s_iot_5
+    description: "Wearables — relojes, pulseras, GPS, AR glasses"
+    devices:
+      - { name: smartwatch_a,  ip: 10.10.5.10, type: smartwatch,       proto: http-post,  dst: http_server,  rate_pps: 0.5, payload: 250 }
+      - { name: smartwatch_b,  ip: 10.10.5.11, type: smartwatch,       proto: http-post,  dst: http_server,  rate_pps: 0.5, payload: 250 }
+      - { name: fitness_band,  ip: 10.10.5.12, type: band,             proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 1,   payload: 120 }
+      - { name: gps_tracker,   ip: 10.10.5.13, type: gps,              proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.5, payload: 100 }
+      - { name: hearing_aid,   ip: 10.10.5.14, type: hearing,          proto: coap,       dst: coap_server,  rate_pps: 0.2, payload: 80 }
+      - { name: ar_glasses,    ip: 10.10.5.15, type: glasses,          proto: udp-stream, dst: http_server,  rate_pps: 30,  payload: 1000 }
+
+  # ─── Zona 6: Agriculture (6 dispositivos) ─────────────────────────
+  - id: 6
+    name: agriculture
+    subnet: 10.10.6.0/24
+    gateway: 10.10.6.254
+    leaf_switch: s_iot_6
+    description: "Agro — humedad, clima, riego, drones, ganado"
+    devices:
+      - { name: soil_moisture, ip: 10.10.6.10, type: sensor_soil,      proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.2, payload: 90 }
+      - { name: weather_st,    ip: 10.10.6.11, type: weather,          proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.3, payload: 200 }
+      - { name: irrigation_v,  ip: 10.10.6.12, type: actuator,         proto: coap,       dst: coap_server,  rate_pps: 0.1, payload: 80 }
+      - { name: drone_gw,      ip: 10.10.6.13, type: drone,            proto: udp-stream, dst: http_server,  rate_pps: 40,  payload: 800 }
+      - { name: livestock_t,   ip: 10.10.6.14, type: tracker,          proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.1, payload: 100 }
+      - { name: pest_sensor,   ip: 10.10.6.15, type: sensor_pest,      proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.1, payload: 80 }
+
+  # ─── Zona 7: Retail (5 dispositivos) ──────────────────────────────
+  - id: 7
+    name: retail
+    subnet: 10.10.7.0/24
+    gateway: 10.10.7.254
+    leaf_switch: s_iot_7
+    description: "Retail — POS, RFID, beacons, balanzas, signage"
+    devices:
+      - { name: pos_terminal,  ip: 10.10.7.10, type: pos,              proto: http-post,  dst: http_server,  rate_pps: 1,   payload: 500 }
+      - { name: rfid_reader,   ip: 10.10.7.11, type: rfid,             proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 3,   payload: 100 }
+      - { name: beacon_a,      ip: 10.10.7.12, type: beacon,           proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.5, payload: 60 }
+      - { name: smart_scale,   ip: 10.10.7.13, type: scale,            proto: mqtt-pub,   dst: mqtt_broker,  rate_pps: 0.5, payload: 80 }
+      - { name: signage,       ip: 10.10.7.14, type: signage,          proto: http-poll,  dst: http_server,  rate_pps: 0.2, payload: 1000 }

@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "Si usa este trabajo, cítelo como se indica."
+title: "Sistema de detección y mitigación automática de ataques en entornos IoT mediante inteligencia artificial con soporte en redes definidas por software (SDN)"
+type: software
+authors:
+  - family-names: "Quintero Estrada"
+    given-names: "Milton Alberto"
+    affiliation: "Universidad Cooperativa de Colombia"
+license: MIT
+date-released: "2026-09-28"
+keywords:
+  - IoT
+  - SDN
+  - intrusion detection
+  - machine learning
+  - OpenFlow
+  - Ryu
+  - Mininet

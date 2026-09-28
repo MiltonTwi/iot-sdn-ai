@@ -1,0 +1,24 @@
+# DDoS UDP Flood
+name: ddos_udp_flood
+description: "Ataque DDoS tipo UDP flood desde múltiples hosts hacia un objetivo"
+label: ATTACK
+
+target:
+  host: h4
+  ip: 10.1.1.4
+
+attackers:
+  - host: h1
+  - host: h2
+  - host: h3
+
+tool: hping3
+params:
+  flags: "--flood --udp"
+  port: 53
+  duration_seconds: 60
+
+# Uso manual en Mininet CLI:
+# h1 hping3 --flood --udp -p 53 10.1.1.4 &
+# h2 hping3 --flood --udp -p 53 10.1.1.4 &
+# h3 hping3 --flood --udp -p 53 10.1.1.4 &

@@ -1,0 +1,191 @@
+# ═══════════════════════════════════════════════════════════════════
+# Catálogo de ataques — 14 escenarios
+# ═══════════════════════════════════════════════════════════════════
+# Cada escenario produce 1 etiqueta de ataque en el dataset.
+# Lanzados desde host attacker (10.10.0.99) salvo `mirai_coordinated`
+# que toma control de N hosts IoT para coordinar el flood.
+# ═══════════════════════════════════════════════════════════════════
+
+scenarios:
+  - id: syn_flood
+    label: SYN_FLOOD
+    family: ddos
+    description: "TCP SYN flood al http_server (puerto 80)"
+    attacker: attacker
+    target: http_server
+    target_ip: 10.10.0.12
+    target_port: 80
+    duration_s: 60
+    rate_pps: 3000   # 20000 inflaba pcap a 10 GB (clase capada a 50k igual)
+    needs_root: true
+    needs_hping: true
+
+  - id: udp_flood
+    label: UDP_FLOOD
+    family: ddos
+    description: "UDP flood al coap_server (puerto 5683)"
+    attacker: attacker
+    target: coap_server
+    target_ip: 10.10.0.11
+    target_port: 5683
+    duration_s: 180
+    rate_pps: 5000
+    src_ports: 256          # rota sport → 256 flujos base (evita colapso 5-tupla)
+    needs_root: false
+
+  - id: icmp_flood
+    label: ICMP_FLOOD
+    family: ddos
+    description: "ICMP echo flood al http_server"
+    attacker: attacker
+    target: http_server
+    target_ip: 10.10.0.12
+    duration_s: 180
+    rate_pps: 3000
+    spoof_base_ip: 10.10.1.100   # botnet: rota source IP → N flujos (ICMP no tiene puertos)
+    src_hosts: 256
+    needs_root: true
+
+  - id: http_flood
+    label: HTTP_FLOOD
+    family: ddos
+    description: "GET flood (capa 7) al http_server"
+    attacker: attacker
+    target: http_server
+    target_ip: 10.10.0.12
+    target_port: 80
+    duration_s: 60
+    concurrency: 200
+    needs_root: false
+
+  - id: slowloris
+    label: SLOWLORIS
+    family: dos_low_rate
+    description: "Slowloris — abre conexiones HTTP y las mantiene incompletas"
+    attacker: attacker
+    target: http_server
+    target_ip: 10.10.0.12
+    target_port: 80
+    duration_s: 90
+    sockets: 500
+    keepalive_s: 15
+    needs_root: false
+
+  - id: port_scan
+    label: PORT_SCAN
+    family: recon
+    description: "SYN scan a la subred de cada zona"
+    attacker: attacker
+    targets_subnets:
+      - 10.10.1.0/24
+      - 10.10.2.0/24
+      - 10.10.3.0/24
+    ports: [22, 23, 53, 80, 502, 1883, 5683, 8080]
+    duration_s: 60
+    needs_root: true
+
+  - id: arp_spoof
+    label: ARP_SPOOF
+    family: mitm
+    description: "ARP poisoning: attacker se hace pasar por el gateway de zona 1"
+    attacker: attacker
+    spoof_as: 10.10.1.254
+    victims_subnet: 10.10.1.0/24
+    duration_s: 60
+    rate_pps: 10
+    needs_root: true
+
+  - id: dns_amplification
+    label: DNS_AMPLIFICATION
+    family: amplification
+    description: "Spoof source IP, query DNS reflectada hacia víctima IoT"
+    attacker: attacker
+    reflector_ip: 10.10.0.13
+    reflector_port: 53
+    victim_ip: 10.10.1.10
+    duration_s: 180
+    rate_pps: 1500   # reflector Python se saturaba a 5000
+    victims: 254            # rocía todo el /24 de la víctima → cientos de flujos
+    src_ports: 64
+    needs_root: true
+
+  - id: coap_amplification
+    label: COAP_AMPLIFICATION
+    family: amplification
+    description: "CoAP GET reflectado a víctima — abuso de respuestas grandes"
+    attacker: attacker
+    reflector_ip: 10.10.0.11
+    reflector_port: 5683
+    victim_ip: 10.10.1.11
+    duration_s: 180
+    rate_pps: 1500   # reflector Python se saturaba a 5000
+    victims: 254
+    src_ports: 64
+    needs_root: true
+
+  - id: ssdp_amplification
+    label: SSDP_AMPLIFICATION
+    family: amplification
+    description: "M-SEARCH reflectado vía SSDP — víctima recibe respuestas grandes"
+    attacker: attacker
+    reflector_ip: 10.10.0.15
+    reflector_port: 1900
+    victim_ip: 10.10.4.16
+    duration_s: 180
+    rate_pps: 1000
+    victims: 254
+    src_ports: 64
+    needs_root: true
+
+  - id: mqtt_subscribe_flood
+    label: MQTT_SUBSCRIBE_FLOOD
+    family: protocol_abuse
+    description: "Cliente MQTT abusivo que se suscribe a # con miles de conexiones"
+    attacker: attacker
+    target_ip: 10.10.0.10
+    target_port: 1883
+    duration_s: 60
+    sockets: 500    # 1 hilo por socket; 2000 chocaba con pids.max
+    needs_root: false
+
+  - id: mqtt_malformed
+    label: MQTT_MALFORMED
+    family: protocol_abuse
+    description: "Frames MQTT con campos truncados / longitudes inválidas"
+    attacker: attacker
+    target_ip: 10.10.0.10
+    target_port: 1883
+    duration_s: 60
+    rate_pps: 1000
+    needs_root: false
+
+  - id: credential_bruteforce
+    label: CREDENTIAL_BRUTEFORCE
+    family: bruteforce
+    description: "Intentos Telnet/SSH (Mirai-style) sobre dispositivos IoT"
+    attacker: attacker
+    targets_subnet: 10.10.1.0/24
+    ports: [23, 2323]
+    duration_s: 120
+    connect_timeout: 0.15   # baja timeout + baraja hosts → alcanza IoT vivos, cicla → +flujos
+    creds_file: builtin
+    needs_root: false
+
+  - id: mirai_coordinated
+    label: MIRAI_COORDINATED
+    family: botnet_ddos
+    description: "Bots reclutados (5 dispositivos) lanzan SYN flood simultáneo"
+    bots:
+      - cam_front
+      - cam_back
+      - bulb_living
+      - smart_plug_a
+      - vacuum
+    target_ip: 10.10.0.12
+    target_port: 80
+    duration_s: 60
+    rate_pps_per_bot: 1000
+    botnet_base_ip: 10.10.1.50   # fallback raw SYN: pool de IPs botnet spoofed
+    botnet_size: 64
+    needs_root: true
+    needs_hping: false           # ya NO es obligatorio: fallback raw SYN puro-Python

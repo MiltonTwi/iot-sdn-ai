@@ -1,0 +1,11 @@
+{
+  "model": "naive_rule_based",
+  "accuracy": 0.15646459529438253,
+  "f1_macro": 0.027198991947016228,
+  "rules": [
+    "host_distinct_dport_5s > 10 \u2192 PORT_SCAN",
+    "host_flows_5s > 100 \u2227 dst_port \u2208 {22,23,2323} \u2192 BRUTEFORCE",
+    "down_up_ratio > 50 \u2192 AMPLIFICATION",
+    "tot_pkts > 5000 \u2228 host_pkts_5s > 10000 \u2192 DDoS (SYN_FLOOD)"
+  ]
+}

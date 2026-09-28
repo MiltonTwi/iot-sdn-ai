@@ -1,0 +1,100 @@
+{
+  "n_splits": 5,
+  "classes": [
+    "BENIGN",
+    "COAP_AMPLIFICATION",
+    "CREDENTIAL_BRUTEFORCE",
+    "DNS_AMPLIFICATION",
+    "HTTP_FLOOD",
+    "ICMP_FLOOD",
+    "MIRAI_COORDINATED",
+    "MQTT_MALFORMED",
+    "MQTT_SUBSCRIBE_FLOOD",
+    "PORT_SCAN",
+    "SLOWLORIS",
+    "SSDP_AMPLIFICATION",
+    "SYN_FLOOD",
+    "UDP_FLOOD"
+  ],
+  "models": {
+    "mlp": {
+      "train_s_total": 139.71037912368774,
+      "accuracy_mean": 0.9873934891110687,
+      "accuracy_std": 0.02091420525429302,
+      "macro_f1_mean": 0.9676822142582212,
+      "macro_f1_std": 0.039103520860554804,
+      "per_class": {
+        "BENIGN": {
+          "f1_mean": 0.9491098799965167,
+          "recall_mean": 0.9275006427043158,
+          "testable_folds": 5
+        },
+        "COAP_AMPLIFICATION": {
+          "f1_mean": 0.9994352610772776,
+          "recall_mean": 1.0,
+          "testable_folds": 3
+        },
+        "CREDENTIAL_BRUTEFORCE": {
+          "f1_mean": 0.9999698019021167,
+          "recall_mean": 0.9999396074575777,
+          "testable_folds": 4
+        },
+        "DNS_AMPLIFICATION": {
+          "f1_mean": 0.9991554195603515,
+          "recall_mean": 0.9993828531931176,
+          "testable_folds": 3
+        },
+        "HTTP_FLOOD": {
+          "f1_mean": 1.0,
+          "recall_mean": 1.0,
+          "testable_folds": 3
+        },
+        "ICMP_FLOOD": {
+          "f1_mean": 0.890635870097222,
+          "recall_mean": 0.997234620041772,
+          "testable_folds": 4
+        },
+        "MIRAI_COORDINATED": {
+          "f1_mean": 0.9965135339307961,
+          "recall_mean": 0.9981796393468826,
+          "testable_folds": 3
+        },
+        "MQTT_MALFORMED": {
+          "f1_mean": 1.0,
+          "recall_mean": 1.0,
+          "testable_folds": 4
+        },
+        "MQTT_SUBSCRIBE_FLOOD": {
+          "f1_mean": 1.0,
+          "recall_mean": 1.0,
+          "testable_folds": 4
+        },
+        "PORT_SCAN": {
+          "f1_mean": 0.9966038206833766,
+          "recall_mean": 0.9971590909090909,
+          "testable_folds": 4
+        },
+        "SLOWLORIS": {
+          "f1_mean": 0.6696362286562731,
+          "recall_mean": 0.6681614349775784,
+          "testable_folds": 3
+        },
+        "SSDP_AMPLIFICATION": {
+          "f1_mean": 0.9996168172263553,
+          "recall_mean": 0.9996528542469588,
+          "testable_folds": 4
+        },
+        "SYN_FLOOD": {
+          "f1_mean": 0.9998200640103101,
+          "recall_mean": 0.999640194922847,
+          "testable_folds": 4
+        },
+        "UDP_FLOOD": {
+          "f1_mean": 0.9997255390777786,
+          "recall_mean": 0.9995734828174506,
+          "testable_folds": 4
+        }
+      }
+    }
+  }
+}

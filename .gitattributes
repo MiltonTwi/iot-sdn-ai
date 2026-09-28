@@ -1,0 +1,8 @@
+# Los scripts corren dentro de la VM Linux: siempre LF.
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.png binary
+*.jpg binary
+*.pdf binary
+*.docx binary
+*.rar binary

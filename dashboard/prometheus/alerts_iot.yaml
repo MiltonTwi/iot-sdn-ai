@@ -1,0 +1,45 @@
+groups:
+  - name: iot_ddos
+    interval: 15s
+    rules:
+      - alert: PortRxPacketsSpike
+        expr: sum by (dpid, port) (rate(ryu_monitor_port_rx_packets[30s])) > 5000
+        for: 30s
+        labels:
+          severity: warning
+          family: ddos
+        annotations:
+          summary: "Spike de paquetes RX en {{ $labels.dpid }}:{{ $labels.port }}"
+          description: "Tasa > 5kpps sostenida 30s — posible flood"
+
+      - alert: ByteAmplification
+        expr: |
+          (sum by (dpid, port) (rate(ryu_monitor_port_tx_bytes[1m])))
+          /
+          (sum by (dpid, port) (rate(ryu_monitor_port_rx_bytes[1m])) > 0)
+          > 50
+        for: 1m
+        labels:
+          severity: critical
+          family: amplification
+        annotations:
+          summary: "Ratio TX/RX > 50x en {{ $labels.dpid }}:{{ $labels.port }}"
+          description: "Posible reflector siendo abusado (DNS/CoAP/SSDP amplification)"
+
+      - alert: HighRxErrors
+        expr: sum by (dpid, port) (rate(ryu_monitor_port_rx_errors[1m])) > 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Errores RX > 10/s en {{ $labels.dpid }}:{{ $labels.port }}"
+          description: "Posible saturación o tráfico malformado"
+
+      - alert: NewSwitchDisappear
+        expr: count(count by (dpid)(ryu_monitor_port_rx_packets)) < 10
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Faltan switches IoT en topología"
+          description: "Topología completa = 10 switches; menos = caída"

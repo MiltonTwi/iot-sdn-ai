@@ -1,0 +1,45 @@
+# ── Datos (regenerables; ver docs/guias/laboratorio.md) ─────────────
+data/raw/
+data/processed/
+data/external/
+data/live/
+data/audit/
+data/bench/
+*.pcap
+*.pcapng
+
+# ── Modelos entrenados (regenerables con `make iot-train`) ─────────
+*.joblib
+*.pkl
+*.onnx
+
+# ── Base SdnShare: datos de ejecución del stack de monitoreo ───────
+SdnShare/graphite/storage/
+SdnShare/graphite/conf/
+SdnShare/grafana/grafana_data/
+SdnShare/influxdb/data/
+SdnShare/influxdb/config/
+SdnShare/prometheus/data/
+
+# ── Tesis: copias de respaldo locales ──────────────────────────────
+docs/tesis/*.bak-*.docx
+docs/tesis/~$*
+docs/*.rar
+
+# ── Python / herramientas ──────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+
+# ── IDE / SO / asistentes ──────────────────────────────────────────
+.claude/
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

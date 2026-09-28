@@ -1,0 +1,83 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "title": "IoT-SDN-AI Overview",
+  "uid": "iot-sdn-ai-overview",
+  "version": 1,
+  "schemaVersion": 38,
+  "tags": ["iot", "sdn", "ddos"],
+  "timezone": "browser",
+  "time": {"from": "now-15m", "to": "now"},
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1, "type": "stat",
+      "title": "PPS total (ingress)",
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum(rate(ryu_monitor_port_rx_packets[1m]))", "refId": "A"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "value"},
+      "fieldConfig": {"defaults": {"unit": "pps", "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 5000}]}}}
+    },
+    {
+      "id": 2, "type": "stat",
+      "title": "Bytes/s total",
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum(rate(ryu_monitor_port_rx_bytes[1m]))", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "Bps"}}
+    },
+    {
+      "id": 3, "type": "stat",
+      "title": "Flujos activos",
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum(ryu_monitor_flow_packet_count)", "refId": "A"}]
+    },
+    {
+      "id": 4, "type": "stat",
+      "title": "Switches conectados",
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "count(count by (dpid)(ryu_monitor_port_rx_packets))", "refId": "A"}],
+      "fieldConfig": {"defaults": {"thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 5}, {"color": "green", "value": 10}]}}}
+    },
+    {
+      "id": 5, "type": "timeseries",
+      "title": "RX bytes/s por switch",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum by (dpid) (rate(ryu_monitor_port_rx_bytes[1m]))", "legendFormat": "dpid {{dpid}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "Bps"}}
+    },
+    {
+      "id": 6, "type": "timeseries",
+      "title": "Top-10 puertos por PPS",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "topk(10, sum by (dpid, port) (rate(ryu_monitor_port_rx_packets[1m])))", "legendFormat": "dpid {{dpid}} port {{port}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "pps"}}
+    },
+    {
+      "id": 7, "type": "timeseries",
+      "title": "Errores RX/TX + drops",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "sum(rate(ryu_monitor_port_rx_errors[1m]))", "legendFormat": "rx errors", "refId": "A"},
+        {"expr": "sum(rate(ryu_monitor_port_tx_errors[1m]))", "legendFormat": "tx errors", "refId": "B"},
+        {"expr": "sum(rate(ryu_monitor_port_rx_dropped[1m]))", "legendFormat": "rx dropped", "refId": "C"}
+      ]
+    },
+    {
+      "id": 8, "type": "timeseries",
+      "title": "Δ flujos (5m)",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "delta(sum(ryu_monitor_flow_packet_count)[5m:30s])", "refId": "A"}]
+    }
+  ]
+}

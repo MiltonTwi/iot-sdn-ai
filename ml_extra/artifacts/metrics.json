@@ -1,0 +1,62 @@
+{
+  "rf": {
+    "train_s": 66.24547052383423,
+    "accuracy": 0.9855582875325427,
+    "precision_macro": 0.9832048994972798,
+    "recall_macro": 0.9771265557015831,
+    "f1_macro": 0.9789603932289672,
+    "report": "                       precision    recall  f1-score   support\n\n               BENIGN       0.92      0.99      0.96      4616\n   COAP_AMPLIFICATION       1.00      1.00      1.00     20790\nCREDENTIAL_BRUTEFORCE       1.00      1.00      1.00      7960\n           HTTP_FLOOD       1.00      1.00      1.00     26069\n           ICMP_FLOOD       1.00      0.99      1.00     12073\n    MIRAI_COORDINATED       1.00      0.83      0.91      9209\n       MQTT_MALFORMED       1.00      1.00      1.00     20208\n            PORT_SCAN       1.00      1.00      1.00       103\n   SSDP_AMPLIFICATION       1.00      1.00      1.00     19670\n            SYN_FLOOD       0.90      1.00      0.94     13486\n            UDP_FLOOD       1.00      0.94      0.97      4096\n\n             accuracy                           0.99    138280\n            macro avg       0.98      0.98      0.98    138280\n         weighted avg       0.99      0.99      0.99    138280\n",
+    "untested_classes": [
+      "DNS_AMPLIFICATION",
+      "MQTT_SUBSCRIBE_FLOOD",
+      "SLOWLORIS"
+    ]
+  },
+  "xgb": {
+    "train_s": 89.92213654518127,
+    "accuracy": 0.9977147816025456,
+    "precision_macro": 0.9945914362618162,
+    "recall_macro": 0.9934468283747898,
+    "f1_macro": 0.9938695674140228,
+    "report": "                       precision    recall  f1-score   support\n\n               BENIGN       0.94      0.99      0.97      4616\n   COAP_AMPLIFICATION       1.00      1.00      1.00     20790\nCREDENTIAL_BRUTEFORCE       1.00      1.00      1.00      7960\n           HTTP_FLOOD       1.00      1.00      1.00     26069\n           ICMP_FLOOD       1.00      1.00      1.00     12073\n    MIRAI_COORDINATED       1.00      1.00      1.00      9209\n       MQTT_MALFORMED       1.00      1.00      1.00     20208\n            PORT_SCAN       1.00      1.00      1.00       103\n   SSDP_AMPLIFICATION       1.00      1.00      1.00     19670\n            SYN_FLOOD       1.00      1.00      1.00     13486\n            UDP_FLOOD       1.00      0.94      0.97      4096\n\n             accuracy                           1.00    138280\n            macro avg       0.99      0.99      0.99    138280\n         weighted avg       1.00      1.00      1.00    138280\n",
+    "untested_classes": [
+      "DNS_AMPLIFICATION",
+      "MQTT_SUBSCRIBE_FLOOD",
+      "SLOWLORIS"
+    ]
+  },
+  "mlp": {
+    "train_s": 36.801159620285034,
+    "accuracy": 0.9988863176164304,
+    "precision_macro": 0.9976606315022342,
+    "recall_macro": 0.9982764286752599,
+    "f1_macro": 0.9979613871623758,
+    "report": "                       precision    recall  f1-score   support\n\n               BENIGN       1.00      0.99      0.99      4616\n   COAP_AMPLIFICATION       1.00      1.00      1.00     20790\nCREDENTIAL_BRUTEFORCE       1.00      1.00      1.00      7960\n           HTTP_FLOOD       1.00      1.00      1.00     26069\n           ICMP_FLOOD       1.00      0.99      1.00     12073\n    MIRAI_COORDINATED       0.99      1.00      0.99      9209\n       MQTT_MALFORMED       1.00      1.00      1.00     20208\n            PORT_SCAN       0.99      1.00      1.00       103\n   SSDP_AMPLIFICATION       1.00      1.00      1.00     19670\n            SYN_FLOOD       1.00      1.00      1.00     13486\n            UDP_FLOOD       1.00      1.00      1.00      4096\n\n             accuracy                           1.00    138280\n            macro avg       1.00      1.00      1.00    138280\n         weighted avg       1.00      1.00      1.00    138280\n",
+    "untested_classes": [
+      "DNS_AMPLIFICATION",
+      "MQTT_SUBSCRIBE_FLOOD",
+      "SLOWLORIS"
+    ]
+  },
+  "isoforest": {
+    "train_s": 2.524118661880493,
+    "type": "anomaly_binary",
+    "accuracy": 0.9780445472953427,
+    "attack_recall": 0.9999027412018194,
+    "attack_precision": 0.9778816746418485,
+    "attack_f1": 0.9887696143346477
+  },
+  "autoencoder": {
+    "train_s": 4.061325550079346,
+    "threshold": 0.5157093169027576,
+    "type": "anomaly_binary",
+    "accuracy": 0.8299681805033265,
+    "attack_recall": 0.8436003710797223,
+    "attack_precision": 0.9774023542464851,
+    "attack_f1": 0.9055856724089467
+  },
+  "_meta": {
+    "split": "grouped",
+    "dataset": "data/processed/run_20260924-214452/dataset.csv"
+  }
+}

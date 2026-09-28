@@ -1,0 +1,11 @@
+# Prometheus configuration file
+
+global:
+  scrape_interval: 15s
+
+# metrics_path defaults to '/metrics'
+# scheme defaults to 'http'.
+scrape_configs:
+  - job_name: 'ryu_monitor'
+    static_configs:
+      - targets: ['controller:8080']

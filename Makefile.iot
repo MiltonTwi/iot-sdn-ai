@@ -1,0 +1,167 @@
+# ════════════════════════════════════════════════════════════════════
+# Makefile.iot — orquesta el overlay IoT sobre SdnShare
+# Uso:  make -f Makefile.iot <target>
+# ════════════════════════════════════════════════════════════════════
+.PHONY: help iot-gen iot-up iot-down iot-topo iot-pingall iot-attack iot-attack-all \
+        iot-capture iot-pipeline iot-train iot-compare iot-dash iot-tunnel iot-clean
+
+CYAN  := \033[36m
+GREEN := \033[32m
+RESET := \033[0m
+
+COMPOSE := docker compose \
+  -f SdnShare/docker-compose.yaml \
+  -f docker-compose.override.yaml
+
+RUN ?= run_$(shell date +%Y%m%d-%H%M%S)
+
+help:
+	@echo "$(CYAN)═══════ IoT-SDN-AI Lab ═══════$(RESET)"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk 'BEGIN {FS = ":.*?## "}; {printf "  $(GREEN)%-18s$(RESET) %s\n", $$1, $$2}'
+
+iot-gen: ## Genera network_config.iot.yaml desde zones.yaml (spine-leaf por defecto)
+	python iot/topology/generate_topology.py
+
+iot-import: ## Importa topología externa (FROM=graphml|nx-json|mininet-py|ryu-api|json INPUT=ruta)
+	@if [ -z "$(FROM)" ] || [ -z "$(INPUT)" ]; then \
+		echo "Uso: make iot-import FROM=graphml INPUT=red.graphml [IP_PREFIX=10.20]"; exit 1; fi
+	python -m iot.topology.importer --from $(FROM) --input "$(INPUT)" \
+		$(if $(IP_PREFIX),--ip-prefix $(IP_PREFIX),) \
+		$(if $(MAC_OUI),--mac-oui $(MAC_OUI),)
+
+iot-up: iot-gen ## Levanta stack completo (controller + mininet + monitor + dashboard)
+	$(COMPOSE) --profile monitor up -d
+	@echo "$(CYAN)Esperando controller...$(RESET)"
+	@until $(COMPOSE) exec -T controller python3 -c "import socket; s=socket.socket(); s.settimeout(2); s.connect(('localhost',8080)); s.close()" 2>/dev/null; do sleep 2; done
+	@echo "$(GREEN)Listo$(RESET)"
+	@echo "  FlowManager : http://localhost:8080"
+	@echo "  Grafana     : http://localhost:3000  (admin/admin)"
+	@echo "  Prometheus  : http://localhost:9090"
+	@echo "  Dashboard   : http://localhost:8000"
+
+iot-down: ## Detiene stack
+	$(COMPOSE) --profile monitor down
+
+iot-topo: ## Inicia topología IoT (con simuladores auto)
+	$(COMPOSE) exec -T mininet mn -c 2>/dev/null || true
+	$(COMPOSE) exec -it mininet python3 /root/iot/topology/mn_iot_topo.py \
+		/root/iot/topology/network_config.iot.yaml --auto-traffic
+
+iot-pingall: ## Ping all-to-all dentro de la topología
+	$(COMPOSE) exec -T mininet bash -c "echo 'pingall' | mn -c 2>/dev/null"
+	@echo "$(CYAN)Ejecutar 'pingall' dentro de mininet$(RESET)"
+
+iot-attack: ## Lanza un escenario (use SCN=syn_flood)
+	@if [ -z "$(SCN)" ]; then echo "Uso: make iot-attack SCN=syn_flood [DUR=60]"; exit 1; fi
+	$(COMPOSE) exec -T mininet bash -c "PID=\$$(pgrep -f 'mininet:attacker' | head -1); mnexec -a \$$PID python3 /root/iot/attacks/runner.py --scenario $(SCN) $(if $(DUR),--duration $(DUR),)"
+
+iot-attack-all: ## Lanza los 14 escenarios secuenciales con cool-down
+	@for s in syn_flood udp_flood icmp_flood http_flood slowloris port_scan arp_spoof \
+	         dns_amplification coap_amplification ssdp_amplification \
+	         mqtt_subscribe_flood mqtt_malformed credential_bruteforce mirai_coordinated; do \
+		echo "$(CYAN)>>> $$s$(RESET)"; \
+		$(COMPOSE) exec -T mininet bash -c "PID=\$$(pgrep -f 'mininet:attacker' | head -1); mnexec -a \$$PID python3 /root/iot/attacks/runner.py --scenario $$s" || true; \
+		sleep 30; \
+	done
+
+iot-capture: ## Captura PCAP en spine (RUN=run_id, IFACE=s_spine_1-eth1)
+	@mkdir -p data/raw/$(RUN)
+	$(COMPOSE) exec -T mininet bash -c "tshark -i $${IFACE:-s_spine_1-eth1} -w /root/data/raw/$(RUN)/capture.pcap"
+
+iot-pipeline: ## Procesa PCAP → CSV final (RUN=run_id requerido)
+	@if [ ! -f "data/raw/$(RUN)/capture.pcap" ]; then echo "No existe data/raw/$(RUN)/capture.pcap"; exit 1; fi
+	@mkdir -p data/processed/$(RUN)
+	@cp -f /tmp/attack_*.json data/raw/$(RUN)/ 2>/dev/null || true
+	python iot/pipeline/flow_extractor.py --pcap data/raw/$(RUN)/capture.pcap --out data/processed/$(RUN)/flows.csv
+	python iot/pipeline/label_dataset.py --flows data/processed/$(RUN)/flows.csv --manifests data/raw/$(RUN)/ --out data/processed/$(RUN)/flows_labeled.csv
+	python iot/pipeline/feature_engineering.py --inp data/processed/$(RUN)/flows_labeled.csv --out data/processed/$(RUN)/dataset.csv
+	@echo "$(GREEN)Dataset listo: data/processed/$(RUN)/dataset.csv$(RESET)"
+
+iot-train: ## Entrena los 5 modelos (RUN=run_id requerido)
+	python ml_extra/train_all.py --dataset data/processed/$(RUN)/dataset.csv
+
+iot-compare: ## Tabla comparativa de modelos
+	python ml_extra/compare.py
+
+iot-dash: ## Levanta dashboard FastAPI standalone (sin Mininet)
+	python dashboard/app.py
+
+iot-tunnel: ## Expone dashboard al celular (MODE=lan|cloudflared|ngrok)
+	pwsh -File scripts/tunnel_phone.ps1 $${MODE:-lan}
+
+iot-mitigate: ## Test manual mitigación (IP=10.10.0.99 ACT=drop|limit DUR=60)
+	@if [ -z "$(IP)" ]; then echo "Uso: make iot-mitigate IP=10.10.0.99 ACT=drop [DUR=60]"; exit 1; fi
+	curl -s -X POST http://localhost:8080/iot/mitigate \
+		-H "Content-Type: application/json" \
+		-d '{"src_ip":"$(IP)","action":"$(or $(ACT),drop)","duration_s":$(or $(DUR),60)}'
+
+iot-unban: ## Quita mitigación de una IP (IP=10.10.0.99)
+	curl -s -X POST http://localhost:8080/iot/unban \
+		-H "Content-Type: application/json" -d '{"src_ip":"$(IP)"}'
+
+iot-mit-status: ## Estado actual de mitigaciones
+	@curl -s http://localhost:8080/iot/status | python -m json.tool
+
+iot-spoof-bindings: ## Bindings IP-MAC aprendidos
+	@curl -s http://localhost:8080/iot/antispoof/bindings | python -m json.tool
+
+iot-spoof-violations: ## Violaciones de IP-MAC detectadas
+	@curl -s http://localhost:8080/iot/antispoof/violations | python -m json.tool
+
+iot-detector: ## Lanza detector ML → controller (RUN=run_id)
+	$(COMPOSE) --profile detector up -d detector
+	@echo "logs: docker compose logs -f detector"
+
+iot-report: ## Genera reporte PDF (RUN=run_id requerido)
+	python ml_extra/report.py --dataset data/processed/$(RUN)/dataset.csv
+
+iot-bench: ## Benchmark de latencia (MODE=mock|live)
+	python scripts/bench_latency.py --mode $(or $(MODE),mock) --runs $(or $(RUNS),20)
+
+iot-demo: ## Demo end-to-end de 90s (push-button)
+	pwsh -File scripts/demo.ps1 -Scenario $(or $(SCN),syn_flood) -Duration $(or $(DUR),30)
+
+iot-test: ## Corre suite de tests
+	python -m pytest tests/ -v
+
+iot-audit: ## Lee últimas 50 entradas del audit log
+	@if [ -f data/audit/mitigation.jsonl ]; then \
+		tail -n 50 data/audit/mitigation.jsonl | python -m json.tool --json-lines; \
+	else echo "(sin eventos aún)"; fi
+
+iot-naive: ## Naive baseline (rule-based, comparación vs ML)
+	python ml_extra/naive_baseline.py --dataset data/processed/$(or $(RUN),run_synth)/dataset.csv \
+		--out ml_extra/artifacts/naive_metrics.json
+
+iot-shap: ## SHAP explainability (top-20 features)
+	python ml_extra/explain.py --dataset data/processed/$(or $(RUN),run_synth)/dataset.csv
+
+iot-cic-adapt: ## Convierte CSVs CIC-IoT-2023 → formato pipeline (INP=ruta, OUT=ruta)
+	@if [ -z "$(INP)" ]; then echo "Uso: make iot-cic-adapt INP=data/external/cic_iot_2023 OUT=data/processed/cic_iot_2023/dataset.csv"; exit 1; fi
+	python ml_extra/cic_iot_adapter.py --inp $(INP) --out $(or $(OUT),data/processed/cic_iot_2023/dataset.csv)
+
+iot-cross-eval: ## Cross-eval: train con A, eval con B (TRAIN=, EVAL=)
+	@if [ -z "$(TRAIN)" ] || [ -z "$(EVAL)" ]; then \
+		echo "Uso: make iot-cross-eval TRAIN=data/processed/run_synth/dataset.csv EVAL=data/processed/cic_iot_2023/dataset.csv"; \
+		exit 1; fi
+	python ml_extra/cross_eval.py --train $(TRAIN) --eval $(EVAL)
+
+iot-live-start: ## Lazo cerrado en vivo: captura + detector 2 etapas → controller (CHUNK=5)
+	$(COMPOSE) exec -T mininet bash /root/iot/pipeline/live_capture.sh start $(or $(CHUNK),5)
+	setsid nohup python3 -u ml_extra/live_detector.py > /tmp/live_detector.log 2>&1 &
+	@echo "acciones: data/live/actions.jsonl · log: /tmp/live_detector.log"
+
+iot-live-stop: ## Detiene el lazo cerrado en vivo
+	-pkill -f ml_extra/live_detector.py
+	$(COMPOSE) exec -T mininet bash /root/iot/pipeline/live_capture.sh stop
+
+iot-closed-loop: ## Experimento lazo cerrado: 13 ataques reales → TTM, acierto, FP (→ closed_loop.json)
+	python3 -u ml_extra/closed_loop_eval.py --benign-s 120 --attack-s 30
+
+iot-base-rate: ## Fase 3: detección a prevalencia realista + PR-AUC (RUN=run_id)
+	python3 ml_extra/base_rate.py --dataset data/processed/$(RUN)/dataset.csv
+
+iot-clean: ## Limpia datos generados
+	rm -rf data/raw/* data/processed/* ml_extra/artifacts/*.joblib ml_extra/artifacts/metrics.json
+	rm -f /tmp/attack_*.json /tmp/iot_hosts.json
