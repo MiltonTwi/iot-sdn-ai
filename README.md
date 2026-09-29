@@ -2,7 +2,7 @@
 
 Laboratorio reproducible que **emula una red IoT de 67 hosts sobre SDN, genera tráfico benigno y 14 escenarios de ataque, entrena modelos de detección y los conecta al controlador para mitigar ataques en lazo cerrado, sin intervención humana**.
 
-Trabajo de grado — Ingeniería de Sistemas, Universidad Cooperativa de Colombia (2026).
+Proyecto de trabajo de grado — Ingeniería de Sistemas, Universidad Cooperativa de Colombia (2026).
 Autor: Milton Alberto Quintero Estrada · Asesor: Ph.D. Néstor Alzate Mejía.
 
 <p align="center">
@@ -98,8 +98,9 @@ Guía completa del laboratorio: [`docs/guias/laboratorio.md`](docs/guias/laborat
 |---|---|
 | [`docs/pasos/`](docs/pasos) | Construcción del laboratorio paso a paso (15 guías) |
 | [`docs/resultados/`](docs/resultados) | Resultados finales, plan de mejoras y evidencia de mitigación |
-| [`docs/tesis/`](docs/tesis) | Trabajo de grado (.docx / .pdf) y su script de actualización |
-| [`docs/defensa/`](docs/defensa) | Material de sustentación |
+| [`docs/tesis/`](docs/tesis) | Diagramas del sistema (`figuras/diagramas.py`) y runbook de re-ejecución |
+
+El documento del trabajo de grado se publicará tras su sustentación.
 
 ## Citar
 

@@ -21,9 +21,12 @@ SdnShare/influxdb/data/
 SdnShare/influxdb/config/
 SdnShare/prometheus/data/
 
-# ── Tesis: copias de respaldo locales ──────────────────────────────
-docs/tesis/*.bak-*.docx
-docs/tesis/~$*
+# ── Tesis y defensa: privadas hasta la sustentación ────────────────
+# (público solo el runbook y las figuras)
+docs/tesis/*
+!docs/tesis/RUNBOOK-rerun.md
+!docs/tesis/figuras/
+docs/defensa/
 docs/*.rar
 
 # ── Python / herramientas ──────────────────────────────────────────
