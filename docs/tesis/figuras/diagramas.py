@@ -141,8 +141,8 @@ def lazo():
     arrow(ax, (6.9 - 1.12, 1.35), (3.5 + 1.22, 1.35))
     arrow(ax, (3.5 - 1.22, 1.35), (1.1, y - 0.52), rad=-0.25, label="contención", lpos=0.45,
           loff=(-0.45, 0))
-    ax.text(6.0, 0.25, "Resultado: 13/13 ataques mitigados · TTM mediana 4,0 s · 0 falsas alarmas · "
-            "reducción mediana 95,1 %", ha="center", fontsize=8.5, style="italic", color="#333333")
+    ax.text(6.0, 0.25, "Resultado (5 corridas): 65/65 ataques mitigados · TTM mediana 5,3 s · 0 falsas alarmas · "
+            "reducción mediana 94,6 %", ha="center", fontsize=8.5, style="italic", color="#333333")
     fig.savefig(OUT / "lazo_cerrado.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
 

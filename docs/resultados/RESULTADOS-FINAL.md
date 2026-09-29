@@ -252,3 +252,28 @@ Port scan y fuerza bruta: sin víctima única (se mide solo TTM y acierto).
 El 0,998 del MLP en la tesis era de una sola partición favorable (fold 0). En CV cae
 en slowloris (F1 0,67) e ICMP (0,89). **RF sigue siendo el mejor multiclase y el más
 estable** → la afirmación "ensambles > MLP" pasa a ser cierta si la Tabla 4 usa CV para los tres.
+
+## Lazo cerrado — 5 corridas (HECHO 2026-09-28)
+
+`scripts/closed_loop_reps.sh 5` → `artifacts/closed_loop_r1..r5.json` (r1 = corrida del 09-26);
+agregación `ml_extra/closed_loop_aggregate.py` → `artifacts/closed_loop_reps.json`.
+
+| Métrica | Valor |
+|---|---|
+| Ataques detectados y mitigados | **65/65** |
+| Falsas alarmas (5 × 120 s benigno) | **0** |
+| Reglas correctas / colaterales | **142/142** / 0 |
+| TTM mediana global / máx | **5,3 s** / 34,2 s |
+| Mediana de TTM por corrida | 5,1 ± 0,9 s (4,0–6,2) |
+| Reducción del tráfico de ataque | mediana **94,6 %**, mín 76,6 % (50 mediciones válidas) |
+| Atribución correcta | 48/65 (74 %) |
+
+Por escenario (TTM media ± desv; atribución): SYN 9,3±0,7 (5/5) · UDP 3,8±1,3 (5/5) ·
+ICMP 3,2±1,5 (5/5) · HTTP 2,9±1,8 (5/5) · Slowloris 21,8±7,1 (0/5) · Scan 20,9±7,7 (1/5) ·
+DNS 3,4±2,0 · CoAP 4,3±1,7 · SSDP 4,0±1,6 (5/5) · MQTT sub 4,9±2,2 (0/5) ·
+MQTT malf 17,4±11,3 (2/5) · Bruteforce 11,8±3,0 (5/5) · Mirai 3,2±1,9 (5/5).
+
+**Criterio de reducción medible:** el pico previo debe ser ≥ 2× la línea base. En 3 corridas
+MQTT_MALFORMED apenas superó la base del broker (pico ≈ 33 pps vs ≈ 25) → reducción no medible
+(detectado y mitigado igual). Los errores de atribución son sistemáticos (slowloris, scan,
+MQTT sub), la acción aplicada fue correcta en todos.

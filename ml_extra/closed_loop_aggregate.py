@@ -12,6 +12,14 @@ from pathlib import Path
 ART = Path(__file__).resolve().parent / "artifacts"
 
 
+def _red(r: dict) -> float | None:
+    """Reducción medible: el ataque debe al menos duplicar la línea base en el objetivo."""
+    v = r.get("victim") or {}
+    if v.get("reduction_pct") is None or v.get("peak_pps_pre", 0) < 2 * max(v.get("baseline_pps", 0), 1):
+        return None
+    return v["reduction_pct"]
+
+
 def _ms(xs: list[float]) -> dict:
     if not xs:
         return {"n": 0}
@@ -20,7 +28,7 @@ def _ms(xs: list[float]) -> dict:
 
 
 def main() -> None:
-    runs = [json.loads(f.read_text()) for f in sorted(ART.glob("closed_loop_r*.json"))]
+    runs = [json.loads(f.read_text()) for f in sorted(ART.glob("closed_loop_r[0-9]*.json"))]
     sids = list(runs[0]["scenarios"])
     per = {}
     for sid in sids:
@@ -29,15 +37,14 @@ def main() -> None:
             "runs": len(rs),
             "detected": sum(r["detected"] for r in rs),
             "ttm_s": _ms([r["ttm_s"] for r in rs if r["ttm_s"] is not None]),
-            "reduction_pct": _ms([r["victim"]["reduction_pct"] for r in rs
-                                  if r.get("victim", {}).get("reduction_pct") is not None]),
+            "reduction_pct": _ms([x for x in map(_red, rs) if x is not None]),
+            "reduction_not_measurable": sum(_red(r) is None and r.get("victim") is not None for r in rs),
             "attribution_ok": sum(bool(r.get("attribution_ok")) for r in rs),
             "collateral": sum(r["collateral"] for r in rs),
         }
     all_ttm = [r["scenarios"][s]["ttm_s"] for r in runs for s in sids
                if r["scenarios"].get(s, {}).get("ttm_s") is not None]
-    all_red = [r["scenarios"][s]["victim"]["reduction_pct"] for r in runs for s in sids
-               if r["scenarios"].get(s, {}).get("victim", {}).get("reduction_pct") is not None]
+    all_red = [x for r in runs for s in sids if (x := _red(r["scenarios"].get(s, {}))) is not None]
     run_medians = [r["summary"]["ttm_median_s"] for r in runs if r["summary"].get("ttm_median_s")]
     summary = {
         "runs": len(runs),

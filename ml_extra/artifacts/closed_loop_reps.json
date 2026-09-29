@@ -1,0 +1,328 @@
+{
+  "summary": {
+    "runs": 5,
+    "attacks_total": 65,
+    "detected_total": 65,
+    "benign_false_actions_total": 0,
+    "benign_seconds_total": 600,
+    "collateral_total": 0,
+    "rules_correct_total": 142,
+    "rules_total": 142,
+    "attribution_ok_total": 48,
+    "ttm_all": {
+      "n": 65,
+      "mean": 8.52,
+      "std": 8.03,
+      "median": 5.3,
+      "min": 1.04,
+      "max": 34.2
+    },
+    "ttm_run_medians": {
+      "n": 5,
+      "mean": 5.12,
+      "std": 0.89,
+      "median": 5.3,
+      "min": 4.04,
+      "max": 6.18
+    },
+    "reduction_all": {
+      "n": 50,
+      "mean": 91.85,
+      "std": 7.77,
+      "median": 94.65,
+      "min": 76.6,
+      "max": 100.0
+    }
+  },
+  "scenarios": {
+    "syn_flood": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 9.26,
+        "std": 0.71,
+        "median": 9.14,
+        "min": 8.41,
+        "max": 10.21
+      },
+      "reduction_pct": {
+        "n": 4,
+        "mean": 99.72,
+        "std": 0.05,
+        "median": 99.7,
+        "min": 99.7,
+        "max": 99.8
+      },
+      "reduction_not_measurable": 1,
+      "attribution_ok": 5,
+      "collateral": 0
+    },
+    "udp_flood": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 3.79,
+        "std": 1.27,
+        "median": 4.04,
+        "min": 1.83,
+        "max": 5.22
+      },
+      "reduction_pct": {
+        "n": 5,
+        "mean": 100.0,
+        "std": 0.0,
+        "median": 100.0,
+        "min": 100.0,
+        "max": 100.0
+      },
+      "reduction_not_measurable": 0,
+      "attribution_ok": 5,
+      "collateral": 0
+    },
+    "icmp_flood": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 3.16,
+        "std": 1.54,
+        "median": 2.64,
+        "min": 1.35,
+        "max": 5.44
+      },
+      "reduction_pct": {
+        "n": 5,
+        "mean": 80.56,
+        "std": 1.77,
+        "median": 80.9,
+        "min": 78.0,
+        "max": 82.7
+      },
+      "reduction_not_measurable": 0,
+      "attribution_ok": 5,
+      "collateral": 0
+    },
+    "http_flood": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 2.94,
+        "std": 1.82,
+        "median": 2.43,
+        "min": 1.23,
+        "max": 5.3
+      },
+      "reduction_pct": {
+        "n": 5,
+        "mean": 96.62,
+        "std": 0.53,
+        "median": 96.7,
+        "min": 95.9,
+        "max": 97.2
+      },
+      "reduction_not_measurable": 0,
+      "attribution_ok": 5,
+      "collateral": 0
+    },
+    "slowloris": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 21.78,
+        "std": 7.11,
+        "median": 18.91,
+        "min": 16.85,
+        "max": 34.2
+      },
+      "reduction_pct": {
+        "n": 4,
+        "mean": 81.62,
+        "std": 0.57,
+        "median": 81.65,
+        "min": 81.0,
+        "max": 82.2
+      },
+      "reduction_not_measurable": 1,
+      "attribution_ok": 0,
+      "collateral": 0
+    },
+    "port_scan": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 20.9,
+        "std": 7.7,
+        "median": 22.36,
+        "min": 7.95,
+        "max": 27.87
+      },
+      "reduction_pct": {
+        "n": 0
+      },
+      "reduction_not_measurable": 0,
+      "attribution_ok": 1,
+      "collateral": 0
+    },
+    "dns_amplification": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 3.44,
+        "std": 1.99,
+        "median": 3.32,
+        "min": 1.24,
+        "max": 5.69
+      },
+      "reduction_pct": {
+        "n": 5,
+        "mean": 91.42,
+        "std": 0.83,
+        "median": 91.7,
+        "min": 90.2,
+        "max": 92.3
+      },
+      "reduction_not_measurable": 0,
+      "attribution_ok": 5,
+      "collateral": 0
+    },
+    "coap_amplification": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 4.31,
+        "std": 1.67,
+        "median": 4.13,
+        "min": 1.95,
+        "max": 6.22
+      },
+      "reduction_pct": {
+        "n": 5,
+        "mean": 78.88,
+        "std": 1.39,
+        "median": 79.7,
+        "min": 76.6,
+        "max": 79.8
+      },
+      "reduction_not_measurable": 0,
+      "attribution_ok": 5,
+      "collateral": 0
+    },
+    "ssdp_amplification": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 3.97,
+        "std": 1.64,
+        "median": 3.98,
+        "min": 2.08,
+        "max": 6.55
+      },
+      "reduction_pct": {
+        "n": 5,
+        "mean": 94.24,
+        "std": 0.6,
+        "median": 94.6,
+        "min": 93.4,
+        "max": 94.7
+      },
+      "reduction_not_measurable": 0,
+      "attribution_ok": 5,
+      "collateral": 0
+    },
+    "mqtt_subscribe_flood": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 4.88,
+        "std": 2.16,
+        "median": 4.94,
+        "min": 2.64,
+        "max": 7.37
+      },
+      "reduction_pct": {
+        "n": 5,
+        "mean": 97.26,
+        "std": 0.13,
+        "median": 97.2,
+        "min": 97.1,
+        "max": 97.4
+      },
+      "reduction_not_measurable": 0,
+      "attribution_ok": 0,
+      "collateral": 0
+    },
+    "mqtt_malformed": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 17.39,
+        "std": 11.3,
+        "median": 11.94,
+        "min": 5.24,
+        "max": 29.84
+      },
+      "reduction_pct": {
+        "n": 2,
+        "mean": 99.7,
+        "std": 0.0,
+        "median": 99.7,
+        "min": 99.7,
+        "max": 99.7
+      },
+      "reduction_not_measurable": 3,
+      "attribution_ok": 2,
+      "collateral": 0
+    },
+    "credential_bruteforce": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 11.76,
+        "std": 2.98,
+        "median": 11.71,
+        "min": 8.29,
+        "max": 16.43
+      },
+      "reduction_pct": {
+        "n": 0
+      },
+      "reduction_not_measurable": 0,
+      "attribution_ok": 5,
+      "collateral": 0
+    },
+    "mirai_coordinated": {
+      "runs": 5,
+      "detected": 5,
+      "ttm_s": {
+        "n": 5,
+        "mean": 3.17,
+        "std": 1.92,
+        "median": 3.16,
+        "min": 1.04,
+        "max": 6.18
+      },
+      "reduction_pct": {
+        "n": 5,
+        "mean": 94.58,
+        "std": 0.68,
+        "median": 94.6,
+        "min": 93.9,
+        "max": 95.4
+      },
+      "reduction_not_measurable": 0,
+      "attribution_ok": 5,
+      "collateral": 0
+    }
+  }
+}

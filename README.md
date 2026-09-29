@@ -17,9 +17,9 @@ Autor: Milton Alberto Quintero Estrada · Asesor: Ph.D. Néstor Alzate Mejía.
 | F1 detección ataque/benigno | **0,995** (AUC 0,999) | Laboratorio |
 | Generalización a CIC-IoT-2023 | **F1 0,940** · AUC 0,948 | 39 características comunes |
 | Detector a prevalencia realista (1 % ataques, XGBoost) | recall **0,996** con precisión ≥ 0,9 | Re-ponderación del benigno |
-| Lazo cerrado: ataques detectados y mitigados | **13/13** · 0 falsas alarmas · 0 reglas colaterales | 120 s benigno + 13 ataques reales |
-| Tiempo hasta la mitigación | mediana **4,0 s** | Inicio del ataque → regla OpenFlow instalada |
-| Reducción del tráfico de ataque | mediana **95,1 %** | Medida en la víctima / reflector |
+| Lazo cerrado: ataques detectados y mitigados | **65/65** · 0 falsas alarmas · 0 reglas colaterales | 5 corridas × (120 s benigno + 13 ataques reales) |
+| Tiempo hasta la mitigación | mediana **5,3 s** (por corrida 5,1 ± 0,9 s) | Inicio del ataque → regla OpenFlow instalada |
+| Reducción del tráfico de ataque | mediana **94,6 %** | Medida en la víctima / reflector |
 | Latencia de inferencia | ~0,7 ms por lote | — |
 
 Detalle, limitaciones y todas las cifras: [`docs/resultados/RESULTADOS-FINAL.md`](docs/resultados/RESULTADOS-FINAL.md).
@@ -79,6 +79,7 @@ make iot-attack SCN=syn_flood           # lanzar un escenario
 bash scripts/rerun_pipeline.sh          # corrida completa: ataques + captura + dataset
 make iot-train RUN=<run_id>             # entrenar los 5 modelos
 make iot-closed-loop                    # experimento de lazo cerrado (13 ataques)
+bash scripts/closed_loop_reps.sh 5      # 5 corridas + agregación (ml_extra/closed_loop_aggregate.py)
 make iot-test                           # pruebas unitarias
 ```
 
