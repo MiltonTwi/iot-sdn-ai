@@ -5,6 +5,7 @@
 """
 from __future__ import annotations
 
+import argparse
 import json
 import statistics as st
 from pathlib import Path
@@ -28,7 +29,11 @@ def _ms(xs: list[float]) -> dict:
 
 
 def main() -> None:
-    runs = [json.loads(f.read_text()) for f in sorted(ART.glob("closed_loop_r[0-9]*.json"))]
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--prefix", default="closed_loop_r", help="corridas <prefix><n>.json")
+    ap.add_argument("--out", default="closed_loop_reps.json")
+    args = ap.parse_args()
+    runs = [json.loads(f.read_text()) for f in sorted(ART.glob(f"{args.prefix}[0-9]*.json"))]
     sids = list(runs[0]["scenarios"])
     per = {}
     for sid in sids:
@@ -61,7 +66,7 @@ def main() -> None:
         "reduction_all": _ms(all_red),
     }
     out = {"summary": summary, "scenarios": per}
-    (ART / "closed_loop_reps.json").write_text(json.dumps(out, indent=2))
+    (ART / args.out).write_text(json.dumps(out, indent=2))
     print(json.dumps(summary, indent=2))
     for sid, p in per.items():
         t, rd = p["ttm_s"], p["reduction_pct"]

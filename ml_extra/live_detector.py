@@ -13,7 +13,7 @@ uno por chunk de captura) y, por cada chunk:
    Un destino con ≥ DIST_SRCS orígenes atacantes distintos = ataque distribuido o
    con origen falsificado → se protege el destino (LIMIT por dst+proto), no se
    persiguen orígenes que pueden ser falsos. La evidencia por origen se acumula
-   en los últimos WINDOW_CHUNKS chunks (ataques de baja tasa).
+   en los últimos WINDOW_S segundos (ataques de baja tasa).
 4. **Política** (match mínimo que contiene el ataque):
    - amplificación: el flujo va víctima(falsificada)→reflector:puerto. LIMIT a ese
      par + puerto (o, si rocía muchas víctimas, a las consultas hacia el
@@ -38,7 +38,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from collections import Counter, deque
+from collections import Counter
 from pathlib import Path
 
 import joblib
@@ -69,7 +69,13 @@ SRC_THR = 0.9             # umbral por flujo para la evidencia POR ORIGEN (ver s
 DURATION_S = 60
 COOLDOWN_S = 30
 MAX_ROWS = 20000
-WINDOW_CHUNKS = 3  # evidencia por origen acumulada (~15 s con chunks de 5 s)
+ATTR_MAX = 2000    # flujos marcados que atribuye el RF por chunk; el resto hereda la
+                   # etiqueta de su origen/destino (bajo flood el RF sobre 20 k tardaba 0,5-1,9 s)
+WINDOW_S = 15.0    # evidencia por origen (baja tasa): flujos DISTINTOS vistos en los
+                   # últimos WINDOW_S s de captura. Por tiempo y por flujo, no por chunk:
+                   # con snapshots solapados (span > chunk) un flujo sale en varios chunks,
+                   # y un chunk descartado por atraso no debe alargar la memoria.
+FLOW_ID = ["src_ip", "src_port", "dst_ip", "dst_port", "proto", "start_ts"]
 
 
 def default_threshold() -> float:
@@ -84,7 +90,8 @@ def default_threshold() -> float:
 
 
 class LiveDetector:
-    def __init__(self, controller: str, thr: float, dry_run: bool, log: Path):
+    def __init__(self, controller: str, thr: float, dry_run: bool, log: Path,
+                 chunk_s: float = 5.0):
         self.controller = controller.rstrip("/")
         self.thr = thr
         self.dry_run = dry_run
@@ -96,8 +103,8 @@ class LiveDetector:
         self.features: list[str] = joblib.load(ART / "feature_names.joblib")
         self.benign = self.classes.index("BENIGN")
         self.recent: dict[str, float] = {}  # clave de regla → ts última acción
-        self.src_hist: dict[str, deque] = {}  # src → [(tick, n_flagged, n_total, labels, (dst,dport))]
-        self._tick = 0
+        # src → {flow_id: (t_visto, marcado, etiqueta, (dst, dport))}
+        self.src_hist: dict[str, dict[tuple, tuple]] = {}
 
     # ── inferencia ────────────────────────────────────────────────────
     def score(self, df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -113,15 +120,36 @@ class LiveDetector:
         strict = p_attack >= self.thr
         loose = p_attack >= min(SRC_THR, self.thr)
         labels = np.full(len(df), "BENIGN", dtype=object)
-        if loose.any():
-            pa = self.attr.predict_proba(Xs[loose])
+        idx = np.flatnonzero(loose)
+        if len(idx):
+            sub = idx if len(idx) <= ATTR_MAX else np.random.default_rng(0).choice(
+                idx, ATTR_MAX, replace=False)
+            pa = self.attr.predict_proba(Xs[sub])
             pa[:, self.benign] = 0.0  # etapa 1 ya decidió "ataque": RF solo elige el tipo
-            labels[loose] = np.asarray(self.classes, dtype=object)[pa.argmax(axis=1)]
+            labels[sub] = np.asarray(self.classes, dtype=object)[pa.argmax(axis=1)]
+            if len(sub) < len(idx):
+                labels = self._propagate(df, loose, labels, sub)
         return strict, loose, labels
+
+    @staticmethod
+    def _propagate(df: pd.DataFrame, loose: np.ndarray, labels: np.ndarray,
+                   sub: np.ndarray) -> np.ndarray:
+        """Etiqueta los flujos marcados no atribuidos con la mayoritaria de su
+        origen; si no, de su destino; si no, la global de la muestra."""
+        s = df.iloc[sub]
+        lab = pd.Series(labels[sub], index=s.index)
+        by_src = lab.groupby(s.src_ip.values).agg(lambda x: x.mode().iat[0])
+        by_dst = lab.groupby(s.dst_ip.values).agg(lambda x: x.mode().iat[0])
+        glob = lab.mode().iat[0]
+        rest = np.setdiff1d(np.flatnonzero(loose), sub)
+        r = df.iloc[rest]
+        fill = r.src_ip.map(by_src).fillna(r.dst_ip.map(by_dst)).fillna(glob)
+        labels[rest] = fill.to_numpy(dtype=object)
+        return labels
 
     # ── agregación en incidentes ──────────────────────────────────────
     def incidents(self, df: pd.DataFrame, strict: np.ndarray, loose: np.ndarray,
-                  labels: np.ndarray) -> list[dict]:
+                  labels: np.ndarray, now: float) -> list[dict]:
         df = df.assign(_strict=strict, _flag=loose, _label=labels)
         att = df[df._flag]
         out = []  # sin early-return: la ventana por origen debe avanzar en cada chunk
@@ -140,40 +168,39 @@ class LiveDetector:
                 out.append({"match": match, "action": "limit", "rate_kbps": LIMIT_KBPS_TIGHT,
                             "label": label, "n_flows": int(len(g)),
                             "n_srcs": int(g.src_ip.nunique()), "reason": "distributed"})
-        # evidencia por origen acumulada en los últimos WINDOW_CHUNKS chunks: los
-        # ataques de baja tasa (scan, fuerza bruta, slowloris) dejan pocos flujos
-        # por chunk y no llegan a MIN_FLOWS en uno solo
-        totals = df.groupby("src_ip").size()
-        self._tick += 1
-        for src, g in att.groupby("src_ip"):
-            if g.dst_ip.isin(dist_dsts).all():
+        # evidencia por origen: flujos distintos de los últimos WINDOW_S s. Los ataques
+        # de baja tasa (scan, fuerza bruta, slowloris) dejan pocos flujos por chunk y
+        # no llegan a MIN_FLOWS en uno solo. Se sigue a los orígenes con algún flujo
+        # marcado; de ellos se registran también sus flujos no marcados (para MIN_FRAC).
+        track = set(att.src_ip) | set(self.src_hist)
+        cols = [c for c in FLOW_ID if c in df.columns]
+        for src, g in df[df.src_ip.isin(track)].groupby("src_ip"):
+            if g[g._flag].dst_ip.isin(dist_dsts).all() and src not in self.src_hist:
                 continue
-            h = self.src_hist.setdefault(src, deque())
-            h.append((self._tick, len(g), int(totals[src]), Counter(g._label),
-                      Counter(zip(g.dst_ip, g.dst_port))))
-        # orígenes con historial sin flujos marcados en este chunk: cuentan en el total
-        flagged_srcs = set(att.src_ip)
-        for src, h in self.src_hist.items():
-            if src not in flagged_srcs and src in totals.index:
-                h.append((self._tick, 0, int(totals[src]), Counter(), Counter()))
-        out += self._source_incidents()
+            h = self.src_hist.setdefault(src, {})
+            for fid, fl, lab, dst, dport in zip(g[cols].itertuples(index=False, name=None),
+                                                g._flag, g._label, g.dst_ip, g.dst_port):
+                prev = h.get(fid)
+                h[fid] = (now, fl or (prev is not None and prev[1]),
+                          lab if fl else (prev[2] if prev else lab), (dst, dport))
+        out += self._source_incidents(now)
         return out
 
-    def _source_incidents(self) -> list[dict]:
+    def _source_incidents(self, now: float) -> list[dict]:
         out = []
         for src, h in list(self.src_hist.items()):
-            while h and h[0][0] <= self._tick - WINDOW_CHUNKS:
-                h.popleft()
-            if not h:
+            for fid in [f for f, v in h.items() if v[0] <= now - WINDOW_S]:
+                del h[fid]
+            marked = [v for v in h.values() if v[1]]
+            if not marked:
                 del self.src_hist[src]
                 continue
-            n_att = sum(x[1] for x in h)
-            n_tot = sum(x[2] for x in h)
+            n_att, n_tot = len(marked), len(h)
             if n_att < MIN_FLOWS or n_att / n_tot < MIN_FRAC:
                 continue
-            label = sum((x[3] for x in h), Counter()).most_common(1)[0][0]
+            label = Counter(v[2] for v in marked).most_common(1)[0][0]
             fam = FAMILY.get(label, "unknown")
-            (dst, dport), _ = sum((x[4] for x in h), Counter()).most_common(1)[0]
+            (dst, dport), _ = Counter(v[3] for v in marked).most_common(1)[0]
             if fam == "amplification":
                 inc = {"match": {"src_ip": src, "dst_ip": dst, "ip_proto": 17, "tp_dst": dport},
                        "action": "limit", "rate_kbps": LIMIT_KBPS_TIGHT}
@@ -228,7 +255,7 @@ class LiveDetector:
         t0 = time.time()
         strict, flagged, labels = self.score(df)
         chunk_end = float(path.stem.split("_")[1]) + chunk_s
-        incs = self.incidents(df, strict, flagged, labels)
+        incs = self.incidents(df, strict, flagged, labels, chunk_end)
         print(f"[CHUNK] {path.name} flows={len(df)} flagged={int(flagged.sum())} "
               f"incidents={len(incs)} infer={time.time() - t0:.2f}s", flush=True)
         with self.log.with_name("chunks.jsonl").open("a", encoding="utf-8") as f:
@@ -250,9 +277,11 @@ def main() -> None:
 
     thr = args.thr if args.thr is not None else default_threshold()
     args.live_dir.mkdir(parents=True, exist_ok=True)
-    det = LiveDetector(args.controller, thr, args.dry_run, args.live_dir / "actions.jsonl")
+    det = LiveDetector(args.controller, thr, args.dry_run, args.live_dir / "actions.jsonl",
+                       chunk_s=args.chunk_s)
     print(f"[INIT] det=XGB thr={thr:.6f} src_thr={SRC_THR} attr=RF controller={args.controller} "
-          f"dry_run={args.dry_run}", flush=True)
+          f"chunk={args.chunk_s}s window={WINDOW_S:g}s dry_run={args.dry_run}",
+          flush=True)
     seen: set[str] = set()
     while True:
         for f in sorted(args.live_dir.glob("feat_*.csv")):

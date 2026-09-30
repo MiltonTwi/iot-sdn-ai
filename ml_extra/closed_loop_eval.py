@@ -140,6 +140,7 @@ def main() -> None:
     p.add_argument("--cooldown-s", type=int, default=20)
     p.add_argument("--scenarios", nargs="*", default=SCENARIOS)
     p.add_argument("--out", default="closed_loop.json", help="nombre del JSON en artifacts/")
+    p.add_argument("--chunk-s", type=float, default=5.0, help="ventana de captura en vivo (s)")
     args = p.parse_args()
 
     catalog = {s["id"]: s for s in yaml.safe_load(
@@ -152,12 +153,14 @@ def main() -> None:
     LIVE.mkdir(parents=True, exist_ok=True)
     (LIVE / "actions.jsonl").unlink(missing_ok=True)
     unban_all()
-    print(dexec("bash /root/iot/pipeline/live_capture.sh start 5").stdout.strip())
+    print(dexec(f"bash /root/iot/pipeline/live_capture.sh start {args.chunk_s:g}").stdout.strip())
     det_log = open("/tmp/live_detector.log", "w")
     det = subprocess.Popen(["python3", str(ROOT / "ml_extra/live_detector.py"),
-                            "--live-dir", str(LIVE), "--controller", CTRL],
+                            "--live-dir", str(LIVE), "--controller", CTRL,
+                            "--chunk-s", str(args.chunk_s)],
                            stdout=det_log, stderr=subprocess.STDOUT)
-    result = {"attack_s": args.attack_s, "benign_s": args.benign_s, "scenarios": {}}
+    result = {"attack_s": args.attack_s, "benign_s": args.benign_s, "chunk_s": args.chunk_s,
+              "scenarios": {}}
     try:
         time.sleep(10)  # arranque de captura + carga de modelos
         t_b = time.time()

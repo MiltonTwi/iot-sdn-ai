@@ -239,7 +239,7 @@ MAX_ACTIVE = 300_000    # válvula: si hay más flujos activos, purga los más v
 
 
 def extract(pcap, out: Path | None, *, live_dir: Path | None = None,
-            emit_every: float = 5.0) -> int:
+            emit_every: float = 5.0, span: float | None = None) -> int:
     """Streaming + agregados O(1) por flujo. Un flujo inactivo > FLOW_TIMEOUT ya
     no puede crecer (el siguiente paquete abre uno nuevo), así que se escribe y
     se libera en barridos periódicos. Memoria = flujos activos, no total del pcap
@@ -252,10 +252,17 @@ def extract(pcap, out: Path | None, *, live_dir: Path | None = None,
     live_dir/flows_<t>.csv con un snapshot ACUMULADO (desde el inicio del flujo)
     de cada flujo que recibió paquetes en la ventana, más los que expiraron. Así
     una conexión larga (slowloris, MQTT) se ve con su duración real y no
-    truncada a la ventana, como en el dataset de entrenamiento."""
+    truncada a la ventana, como en el dataset de entrenamiento.
+
+    `span` (≥ emit_every): el snapshot incluye los flujos con paquetes en los
+    últimos `span` s, no solo en la última ventana. Con emit_every=2 y span=5 se
+    decide cada 2 s pero las agregaciones host_*_5s / dst_*_5s ven 5 s de
+    actividad, igual que en entrenamiento (con span=2 los ataques de baja tasa
+    quedaban por debajo del umbral)."""
+    span = max(span or emit_every, emit_every)
     flows: dict[tuple, FlowState] = {}
     last_seen: dict[tuple, float] = {}
-    touched: set[tuple] = set()
+    touched: dict[tuple, float] = {}  # flujo → ts de su último paquete (live)
     n_flows = 0
     next_sweep = None
     next_emit = None
@@ -277,14 +284,16 @@ def extract(pcap, out: Path | None, *, live_dir: Path | None = None,
         if live_dir is None:  # en live el flujo ya salió en los snapshots de sus ventanas
             w.writerow(feats(f))
 
-    def emit_window() -> None:
-        """Cierra la ventana live: snapshot de los flujos tocados → archivo final."""
+    def emit_window(now: float) -> None:
+        """Cierra la ventana live: snapshot de los flujos con paquetes en los
+        últimos `span` s → archivo final."""
         nonlocal fp, w
+        for k in [k for k, t in touched.items() if now - t > span]:
+            del touched[k]
         for k in touched:
             f = flows.get(k)
             if f is not None:
                 w.writerow(feats(f))
-        touched.clear()
         fp.close()
         tmp.rename(live_dir / f"flows_{int(win_start)}.csv")
         fp, w = open_writer(tmp)
@@ -323,11 +332,11 @@ def extract(pcap, out: Path | None, *, live_dir: Path | None = None,
             if next_emit is None:
                 win_start, next_emit = ts, ts + emit_every
             elif ts >= next_emit:
-                emit_window()
+                emit_window(ts)
                 win_start, next_emit = ts, ts + emit_every
         k = key(src, sport, dst, dport, proto, ts)
         if live_dir is not None:  # en batch no: crecería con todo el pcap
-            touched.add(k)
+            touched[k] = ts
         f = flows.get(k)
         if f is None or ts - last_seen.get(k, ts) > FLOW_TIMEOUT:
             if f is not None:
@@ -397,9 +406,12 @@ def main() -> None:
     p.add_argument("--live-dir", type=Path,
                    help="modo live: lee pcap de stdin y emite snapshots por ventana aquí")
     p.add_argument("--emit-every", type=float, default=5.0)
+    p.add_argument("--span", type=float, default=None,
+                   help="live: el snapshot cubre los flujos activos en los últimos SPAN s")
     args = p.parse_args()
     if args.live_dir:
-        extract(sys.stdin.buffer, None, live_dir=args.live_dir, emit_every=args.emit_every)
+        extract(sys.stdin.buffer, None, live_dir=args.live_dir, emit_every=args.emit_every,
+                span=args.span)
         return
     if not args.pcap or not args.out:
         p.error("--pcap y --out requeridos (o --live-dir)")
