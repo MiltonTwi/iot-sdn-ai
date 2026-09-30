@@ -139,7 +139,7 @@ Lanzar `make iot-attack SCN=arp_spoof` provoca violaciones visibles en este endp
 |---|---|---|
 | "Detección automática" | `ml_extra/train_all.py` + `dashboard/detector_service.py` | ✓ |
 | "Mitigación automática" | `iot/controller/iot_mitigation.py` | ✓ |
-| "IoT" | `iot/zones.yaml` (63 dispositivos en 7 zonas) | ✓ |
+| "IoT" | `iot/zones.yaml` (60 dispositivos en 7 zonas) | ✓ |
 | "IA" | 5 modelos (`ml_extra/`) | ✓ |
 | "SDN" | Ryu apps + OpenFlow 1.3 + Meters | ✓ |
 | Anti-Spoofing IP-MAC binding (objetivo específico 3) | `iot/controller/iot_antispoof.py` | ✓ |

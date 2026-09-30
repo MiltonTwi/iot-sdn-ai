@@ -1,4 +1,24 @@
-# Resultados FINALES — run_20260924-214452 (documento de trabajo)
+# Resultados finales — IoT-SDN-AI
+
+**Cifras vigentes (octubre 2026).** Este resumen manda; las secciones siguientes son el
+registro cronológico del trabajo y algunas quedaron superadas (se indica en su título).
+
+| Área | Resultado | Protocolo / artefacto |
+|---|---|---|
+| Dataset | 505.768 flujos, 14 clases, 50 características, 6 episodios por ataque | `run_20260924-214452` |
+| Clasificación multiclase | **RF F1-macro 0,986 ± 0,014** (exactitud 0,986 ± 0,018); MLP 0,968 ± 0,039; XGB 0,958 ± 0,048 | CV agrupada 5 particiones · `cv_grouped*.json` |
+| Detección ataque/benigno | F1 0,995 · AUC 0,999 (intra-dominio); umbral 0,10 → FPR 3,96 % | `cross_eval_cic.json`, `threshold_fp.json` |
+| Prevalencia 1 % | XGB recall 0,996 con precisión ≥ 0,9 (PR-AUC 0,998); RF precisión 0,20 → XGB detecta, RF atribuye | `base_rate.json` |
+| Externo CIC-IoT-2023 | Detección F1 0,940 · AUC 0,948 · precisión 0,999; atribución no transfiere (0,016) | `cross_eval_cic.json` |
+| Calibración / bootstrap | Brier RF 0,0022; F1-macro 0,979 [0,978, 0,980] | `calibration_metrics.json`, `bootstrap_ci.json` |
+| Robustez | RF 0,979 → 0,210 con σ = 1 | `adversarial_metrics.json` |
+| Línea base de reglas | exactitud 0,244 · F1 0,066 | `naive_metrics.json` |
+| **Lazo cerrado (config. final, ventana 2 s)** | **39/39 mitigados, 0 falsas alarmas (960 s benignos), 243/243 reglas, TTM mediana 2,5 s, reducción 95,2 %** | 3 corridas, pausa 60 s · `closed_loop_cd60_c2_reps.json` |
+| Lazo cerrado (ventana 5 s) | 39/39, 0 falsas alarmas, TTM mediana 4,7 s, reducción 94,6 % | `closed_loop_cd60_c5_reps.json` |
+
+---
+
+## Registro: run_20260924-214452 (documento de trabajo)
 
 **Generado:** 2026-09-24 · **Corrida definitiva** (EPISODES=6). Supersede a
 `run_20260924-192239` (ver `RESULTADOS-run_20260924-192239.md`, EPISODES=5).
@@ -108,7 +128,7 @@ falsos positivos queda resuelto vía punto de operación**, sin re-entrenar.
 
 ---
 
-## Cambio de relato para la tesis (pendiente de tu OK para reescribir)
+## Cambio de relato para la tesis (aplicado)
 
 - Titular: **RF, CV agrupada, F1-macro 0,986 ± 0,014** (no split único, no XGB).
 - Amplificación: de "lo difícil (recall 0,00-0,21)" → **resuelta** (~1,0).
@@ -173,7 +193,7 @@ Test fold-0 tiene **prevalencia de ataque 96,7 %** (4616 benignos / 133664 ataqu
   benigno pesa ~29 000×; las cifras a ≤1 % son de alta varianza. Más benigno
   diverso en futuras corridas lo acotaría.
 
-## Lazo cerrado en vivo: detección → mitigación automática (HECHO 2026-09-26)
+## Lazo cerrado en vivo: detección → mitigación automática (2026-09-26) — cifras SUPERADAS (ver resumen)
 
 Antes la mitigación se disparaba **a mano** (REST). Ahora el ciclo completo corre
 solo, sobre ataques reales en Mininet:
@@ -253,7 +273,7 @@ El 0,998 del MLP en la tesis era de una sola partición favorable (fold 0). En C
 en slowloris (F1 0,67) e ICMP (0,89). **RF sigue siendo el mejor multiclase y el más
 estable** → la afirmación "ensambles > MLP" pasa a ser cierta si la Tabla 4 usa CV para los tres.
 
-## Lazo cerrado — 5 corridas (HECHO 2026-09-28)
+## Lazo cerrado — 5 corridas (2026-09-28) — RETIRADAS: pausa de 20 s con arrastre entre escenarios
 
 `scripts/closed_loop_reps.sh 5` → `artifacts/closed_loop_r1..r5.json` (r1 = corrida del 09-26);
 agregación `ml_extra/closed_loop_aggregate.py` → `artifacts/closed_loop_reps.json`.

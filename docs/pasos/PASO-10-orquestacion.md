@@ -21,7 +21,7 @@ Hace:
 1. `env_check.ps1` (Docker/Python/WSL/puertos).
 2. `generate_topology.py` (zones.yaml → network_config.iot.yaml).
 3. `make iot-up` (controller, mininet, monitor, dashboard).
-4. `make iot-topo` (topología 70 hosts, simuladores en background).
+4. `make iot-topo` (topología 67 hosts, simuladores en background).
 5. `make iot-attack-all` (14 escenarios secuenciales, ~25 min).
 6. `make iot-pipeline RUN=...` (pcap → dataset.csv).
 7. `make iot-train` + `iot-compare` (5 modelos + tabla).

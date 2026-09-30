@@ -108,4 +108,4 @@ Ver [`CITATION.cff`](CITATION.cff).
 
 ## Licencia y créditos
 
-Código propio bajo licencia [MIT](LICENSE). El directorio `SdnShare/` es el laboratorio base de [SdnShare](https://github.com/JosephRodriri/SdnShare) y conserva los términos de su autor.
+Código propio bajo licencia [MIT](LICENSE). El directorio `SdnShare/` es el laboratorio base de [SdnShare](https://github.com/JosephRodriri/SdnShare); ese repositorio no declara licencia y se incluye con crédito a su autor.

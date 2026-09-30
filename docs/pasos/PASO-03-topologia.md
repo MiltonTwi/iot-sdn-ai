@@ -34,7 +34,7 @@ Separación → puedes regenerar topologías sin tocar Mininet, hacer diff sobre
    7 servers   15 hosts                                  5 hosts
 ```
 
-- **2 spines + 8 leaves + 70 hosts** (63 IoT + 7 servers).
+- **2 spines + 8 leaves + 67 hosts** (60 IoT + 6 servidores + 1 atacante).
 - 16 enlaces inter-switch (full mesh 2x8).
 - IDs OpenFlow: spines 1,2; leaves 10..17.
 
@@ -72,8 +72,8 @@ docker compose exec mininet python3 /root/iot/topology/mn_iot_topo.py \
 
 Dentro de Mininet CLI:
 ```
-mininet> nodes               # debe listar 70 hosts + 10 switches
-mininet> pingall             # 0% loss esperado (puede tardar 30-60s con 70 hosts)
+mininet> nodes               # debe listar 67 hosts + 10 switches
+mininet> pingall             # 0% loss esperado (puede tardar 30-60s con 67 hosts)
 mininet> cam_front ifconfig  # ver IP 10.10.1.10 asignada
 ```
 

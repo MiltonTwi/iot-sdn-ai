@@ -1,5 +1,11 @@
 # Guía: retomar el proyecto IoT-SDN-AI
 
+> **Vigencia (octubre 2026):** los pasos de arranque de la VM siguen válidos; el estado y las
+> cifras son de mayo. Cifras vigentes: [`../resultados/RESULTADOS-FINAL.md`](../resultados/RESULTADOS-FINAL.md).
+> Si el contenedor pierde los montajes (`Transport endpoint is not connected`):
+> `docker restart sdnshare-mininet-1`, luego `mn -c`, `service openvswitch-switch start` y
+> relanzar la topología (`make iot-topo`).
+
 **Fecha base:** 2026-05-11
 **Estado verificado hoy:** stack levantado, controller procesando tráfico real, anti-spoof aprendiendo bindings, REST API IoT responde.
 

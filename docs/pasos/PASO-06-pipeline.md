@@ -80,7 +80,7 @@ python iot\pipeline\feature_engineering.py \
 
 ## Volumen esperado
 
-Con 63 dispositivos a tasas declaradas, **~3,000 paquetes/s benigno** sostenido. Una corrida de 5 minutos benigna + 25 minutos con 14 ataques (2 min cada uno) produce:
+Con 60 dispositivos a tasas declaradas, **~3,000 paquetes/s benigno** sostenido. Una corrida de 5 minutos benigna + 25 minutos con 14 ataques (2 min cada uno) produce:
 
 - ~600,000 paquetes totales
 - ~50,000 - 100,000 flujos

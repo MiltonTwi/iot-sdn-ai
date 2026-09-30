@@ -8,7 +8,7 @@
 ## Checklist de archivos
 
 ### Capa 1 — declarativa
-- [x] `iot/zones.yaml` (63 dispositivos)
+- [x] `iot/zones.yaml` (60 dispositivos)
 - [x] `iot/attacks/catalog.yaml` (14 escenarios)
 
 ### Capa 2 — generadores
@@ -89,7 +89,7 @@ iot-sdn-ai/                                   (≈ 50 archivos overlay + base)
 ├── pyproject.iot.toml
 ├── SdnShare/                                  (base, no modificar)
 ├── iot/
-│   ├── zones.yaml                             (63 devices, 7 zones)
+│   ├── zones.yaml                             (60 devices, 7 zones)
 │   ├── topology/
 │   │   ├── generate_topology.py               (zones → network_config)
 │   │   └── mn_iot_topo.py                     (Mininet builder)
@@ -137,7 +137,7 @@ iot-sdn-ai/                                   (≈ 50 archivos overlay + base)
 
 ## Resumen ejecutivo
 
-- **Entregable:** overlay funcional sobre SdnShare con 7 zonas IoT, 63 dispositivos simulados, 14 ataques, 5 modelos ML, dashboard web mobile-friendly.
+- **Entregable:** overlay funcional sobre SdnShare con 7 zonas IoT, 60 dispositivos simulados, 14 ataques, 5 modelos ML, dashboard web mobile-friendly.
 - **Esfuerzo:** ~50 archivos nuevos, ~3,500 líneas de código + documentación, sin tocar el base.
 - **Reproducible:** un solo comando (`start_all.ps1`) ejecuta todo el pipeline.
 - **Documentado:** 11 PASO-XX en español + README + diagramas.

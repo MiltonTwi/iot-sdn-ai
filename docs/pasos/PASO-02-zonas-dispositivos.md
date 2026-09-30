@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-05-04
 **Archivo fuente:** `iot/zones.yaml`
-**Total:** 7 zonas + 1 zona infraestructura, **63 dispositivos IoT** + 7 servidores.
+**Total:** 7 zonas + 1 zona infraestructura, **60 dispositivos IoT** + 6 servidores + 1 atacante.
 
 ---
 
@@ -38,7 +38,7 @@ Mezcla deliberada: protocolos texto/binarios, TCP/UDP, alto/bajo pps. Permite qu
 
 ## Razones de diseño
 
-- **63 dispositivos** = volumen suficiente para entrenamiento ML estable (>10⁶ flujos en pocos minutos), sin saturar Mininet (probado hasta ~200 hosts en spine-leaf).
+- **60 dispositivos** = volumen suficiente para entrenamiento ML estable (>10⁶ flujos en pocos minutos), sin saturar Mininet (probado hasta ~200 hosts en spine-leaf).
 - **Subred por zona**: aisla broadcast/ARP, permite reglas SDN por zona, simplifica etiquetado.
 - **Servidores en zona 0**: punto único de focalización para ataques de amplificación y floods.
 - **Attacker en `10.10.0.99`**: host malicioso fijo, fácil de identificar en el dataset.

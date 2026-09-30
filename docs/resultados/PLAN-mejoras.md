@@ -1,5 +1,7 @@
 # Plan de trabajo — corrección de rigor y amplificación
 
+> **Documento histórico.** Registro del proceso; sus cifras están superadas. Cifras vigentes: [`RESULTADOS-FINAL.md`](RESULTADOS-FINAL.md).
+
 **Creado:** 2026-09-22 · **Baseline:** `run_20260921-135634` (RF acc 0.973 / F1-macro 0.822)
 **Dónde corre:** código se edita en host Windows; pipeline/entrenamiento en **VM** (`/home/ubuntu/iot-sdn-ai`, contenedor `sdnshare-mininet-1`). El host no tiene pandas.
 

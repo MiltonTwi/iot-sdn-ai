@@ -36,39 +36,31 @@ Abre 4 ventanas, organizadas:
 
 ---
 
-## 4. Guion (90 segundos)
+## 4. Guion (90 segundos) — mitigación AUTOMÁTICA
+
+Antes de grabar (en la VM): topología arriba (`make iot-topo`) y lazo en vivo
+(`make iot-live-start`). En una terminal: `tail -f /tmp/live_detector.log | grep ACTION`.
 
 ```
-[0:00] "Demo del proyecto IoT-SDN-AI."
-       Mostrar dashboard izquierdo: 67 dispositivos, 7 zonas activas.
+[0:00] "Demo del proyecto IoT-SDN-AI: 67 hosts, 10 conmutadores OpenFlow."
+       Mostrar el diagrama del lazo (docs/tesis/figuras/lazo_cerrado.png).
 
-[0:10] "Lanzo el ataque syn_flood desde el host atacante."
-       En PowerShell:
-       > make -f Makefile.iot iot-demo SCN=syn_flood
+[0:10] "El detector analiza el tráfico cada 2 segundos. Nadie va a tocar nada."
+       Mostrar el log del detector: ventanas [CHUNK] sin incidentes.
 
-[0:25] "El detector ML procesa los flujos en tiempo real."
-       Mostrar dashboard: PPS sube de ~400 a ~5000.
+[0:20] "Lanzo un UDP flood desde el host atacante."
+       > make iot-attack SCN=udp_flood
 
-[0:40] "El bridge llama a /iot/mitigate con confianza > 0.85."
-       En PowerShell separada:
-       > curl http://localhost:8080/iot/status
+[0:25] "En unos 3 segundos el detector lo identifica y pide la regla."
+       Señalar la línea: [ACTION] drop {'src_ip': '10.10.0.99'} UDP_FLOOD ... lat=…s
 
-       Apunta a la respuesta JSON: src_ip=10.10.0.99, action=drop, dpids=[...]
+[0:40] "El controlador instaló la regla en los 10 conmutadores."
+       > make iot-mit-status
+       > docker exec sdnshare-mininet-1 ovs-ofctl -O OpenFlow13 dump-flows s_iot_0 table=0 | grep 10.10.0.99
 
-[0:55] "El controlador SDN instala flow-rules en 8 switches."
-       En PowerShell:
-       > docker exec sdnshare-mininet-1 ovs-ofctl -O OpenFlow13 dump-flows s_iot_0 | grep priority=200
+[0:60] "El tráfico del atacante cae a cero; los sensores legítimos siguen funcionando."
 
-       Lee la línea: priority=200, nw_src=10.10.0.99 actions=drop
-
-[1:10] "El tráfico atacante se bloquea. El dashboard muestra mitigación activa."
-       Apunta al dashboard: card de ataques activos = 1, con etiqueta SYN_FLOOD.
-
-[1:25] "Tras 60 segundos la regla expira; o se libera con /iot/unban."
-
-[1:35] "Cero impacto en sensores legítimos durante todo el ataque."
-
-[1:30] FIN.
+[1:15] "En la evaluación: 39 de 39 ataques mitigados, mediana 2,5 s, cero falsas alarmas."
 ```
 
 ---
@@ -102,7 +94,7 @@ Edita en CapCut (gratis) o solo recorta inicio/final con OBS.
 
 Captura screenshots de:
 1. Dashboard antes del ataque.
-2. PowerShell con `make iot-demo` corriendo.
+2. Terminal con `make iot-live-start` activo y el log del detector visible.
 3. `/iot/status` con la entrada activa.
 4. `ovs-ofctl dump-flows` con la flow-rule de drop.
 5. Dashboard durante el ataque (KPIs en rojo).

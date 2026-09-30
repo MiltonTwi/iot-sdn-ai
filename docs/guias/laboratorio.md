@@ -2,7 +2,7 @@
 
 Laboratorio para **detección de ataques IoT con AI sobre SDN**, construido como overlay del repo base [SdnShare](https://github.com/JosephRodriri/SdnShare).
 
-- **70 hosts** (63 dispositivos IoT + 7 servidores) en 7 zonas
+- **67 hosts** (60 dispositivos IoT en 7 zonas + 6 servidores + 1 atacante)
 - **14 escenarios de ataque** (DDoS, low-rate, recon, MITM, amplification, protocol-abuse, bruteforce, botnet)
 - **5 modelos ML** (Random Forest, XGBoost, MLP, Isolation Forest, AutoEncoder)
 - **Dashboard web FastAPI** (mobile-friendly + WebSocket) + Grafana provisioned
@@ -13,7 +13,7 @@ Laboratorio para **detección de ataques IoT con AI sobre SDN**, construido como
 ## Quickstart
 
 ### Prerequisitos
-- Windows 11 con Docker Desktop + WSL2
+- VM Ubuntu 22.04 (Multipass/Hyper-V) con Docker; ≥ 4 GB de RAM para la VM
 - Python 3.10+
 - 8 GB RAM libres recomendados
 
@@ -64,7 +64,7 @@ cd C:\Users\mquui\iot-sdn-ai
    │   │s_iot_0 │  │s_iot_1 │                     │s_iot_7   │   │
    │   │ infra  │  │ home   │                     │ retail   │   │
    │   └───┬────┘  └───┬────┘                     └────┬─────┘   │
-   │   7 servers   15 dev                          5 dev          │
+   │ 6 serv+atac   15 dev                          5 dev          │
    └──────┬──────────────┬───────────────────────────────────────┘
           │              │
    simuladores       atacantes
@@ -72,7 +72,7 @@ cd C:\Users\mquui\iot-sdn-ai
           │              │
           └──────┬───────┘
                  ▼
-            tshark PCAP
+   tcpdump (puerto espejo s_iot_0)
                  │
                  ▼
        iot/pipeline/  (flow → label → features)
@@ -102,7 +102,7 @@ cd C:\Users\mquui\iot-sdn-ai
 | Paso | Tema |
 |---|---|
 | [01](../pasos/PASO-01-arquitectura.md) | Arquitectura overlay + estructura |
-| [02](../pasos/PASO-02-zonas-dispositivos.md) | 7 zonas, 63 dispositivos |
+| [02](../pasos/PASO-02-zonas-dispositivos.md) | 7 zonas, 60 dispositivos |
 | [03](../pasos/PASO-03-topologia.md) | Generador Mininet IoT |
 | [04](../pasos/PASO-04-simuladores.md) | Simuladores stdlib pura |
 | [05](../pasos/PASO-05-ataques.md) | 14 escenarios |
@@ -121,49 +121,27 @@ cd C:\Users\mquui\iot-sdn-ai
 
 ## Estructura
 
-```
-iot-sdn-ai/
-├── SdnShare/                  # base (no modificar)
-├── iot/
-│   ├── zones.yaml             # 7 zonas, 63 dispositivos
-│   ├── topology/
-│   ├── devices/               # simuladores + servers stdlib
-│   ├── attacks/               # 14 escenarios
-│   └── pipeline/              # flow_extractor + label + features
-├── ml_extra/
-│   ├── models/                # rf, xgb, mlp, isoforest, autoencoder
-│   └── train_all.py
-├── dashboard/                 # FastAPI + static SPA + Grafana JSON + Prom alerts
-├── docs/                      # PASO-XX-*.md
-├── scripts/                   # env_check, start_all, tunnel_phone
-├── docker-compose.override.yaml
-├── Makefile.iot
-├── pyproject.iot.toml
-└── README.iot.md
-```
+Ver la sección "Estructura del repositorio" del [`README.md`](../../README.md) principal.
 
 ---
 
-## Resultados esperados
+## Resultados obtenidos
 
-Tras `start_all.ps1` con duración por defecto:
+Cifras vigentes (detalle y protocolo en [`../resultados/RESULTADOS-FINAL.md`](../resultados/RESULTADOS-FINAL.md)):
 
-| Métrica | Valor típico |
+| Métrica | Valor |
 |---|---|
-| Paquetes capturados | ~600,000 en 30 min |
-| Flujos extraídos | 50,000 - 100,000 |
-| Etiquetas únicas | 15 (BENIGN + 14 ataques) |
-| Accuracy RF/XGB | 0.96 - 0.99 |
-| Accuracy MLP | 0.92 - 0.96 |
-| Accuracy IsoForest/AE (binario) | 0.88 - 0.94 |
-| F1-macro mejor modelo | ~0.96 |
+| Dataset | 505.768 flujos, 14 clases, 50 características |
+| F1-macro Random Forest (CV agrupada, sin fuga) | 0,986 ± 0,014 |
+| Detección ataque/benigno | F1 0,995 · AUC 0,999; externo CIC-IoT-2023 F1 0,940 |
+| Lazo cerrado (ventana 2 s) | 39/39 ataques mitigados, 0 falsas alarmas, tiempo mediano 2,5 s |
 
 ---
 
 ## Tradeoffs documentados
 
-- Mininet en Docker requiere privileged + WSL2 → no corre en Windows nativo.
-- ARP spoof depende de bridge en modo promiscuo → puede fallar; manifest queda con `return_code=1` y se omite del dataset.
+- Mininet en Docker requiere privileged y un kernel Linux: corre en una VM Ubuntu (Multipass/Hyper-V); en WSL2 OVS se caía.
+- ARP spoof opera en capa 2 (sin flujos IP): queda fuera del clasificador y lo cubre el anti-spoofing IP-MAC del controlador.
 - AutoEncoder con sklearn MLPRegressor (no PyTorch) → 85% del rendimiento, cero deps extra. Pendiente: LSTM-AE en torch.
 - `iot-attack-all` secuencial (~25 min) en lugar de paralelo (~5 min) → datos limpios sin etiquetas superpuestas.
 
@@ -171,6 +149,6 @@ Tras `start_all.ps1` con duración por defecto:
 
 ## Licencia
 
-Overlay propio (este repo). Repo base SdnShare bajo MIT (Maen Artimy).
+Código propio bajo MIT (ver [`LICENSE`](../../LICENSE)). El laboratorio base [SdnShare](https://github.com/JosephRodriri/SdnShare) no declara licencia; se incluye con crédito a su autor.
 
-Proyecto académico — semillero de investigación, deadline 2026-05-17.
+Proyecto de trabajo de grado — Ingeniería de Sistemas, Universidad Cooperativa de Colombia (2026).
