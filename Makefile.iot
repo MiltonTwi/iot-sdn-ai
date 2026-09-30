@@ -147,9 +147,9 @@ iot-cross-eval: ## Cross-eval: train con A, eval con B (TRAIN=, EVAL=)
 		exit 1; fi
 	python ml_extra/cross_eval.py --train $(TRAIN) --eval $(EVAL)
 
-iot-live-start: ## Lazo cerrado en vivo: captura + detector 2 etapas → controller (CHUNK=5)
-	$(COMPOSE) exec -T mininet bash /root/iot/pipeline/live_capture.sh start $(or $(CHUNK),5)
-	setsid nohup python3 -u ml_extra/live_detector.py > /tmp/live_detector.log 2>&1 &
+iot-live-start: ## Lazo cerrado en vivo: captura + detector 2 etapas → controller (CHUNK=2)
+	$(COMPOSE) exec -T mininet bash /root/iot/pipeline/live_capture.sh start $(or $(CHUNK),2)
+	setsid nohup python3 -u ml_extra/live_detector.py --chunk-s $(or $(CHUNK),2) > /tmp/live_detector.log 2>&1 &
 	@echo "acciones: data/live/actions.jsonl · log: /tmp/live_detector.log"
 
 iot-live-stop: ## Detiene el lazo cerrado en vivo
@@ -157,7 +157,7 @@ iot-live-stop: ## Detiene el lazo cerrado en vivo
 	$(COMPOSE) exec -T mininet bash /root/iot/pipeline/live_capture.sh stop
 
 iot-closed-loop: ## Experimento lazo cerrado: 13 ataques reales → TTM, acierto, FP (→ closed_loop.json)
-	python3 -u ml_extra/closed_loop_eval.py --benign-s 120 --attack-s 30
+	python3 -u ml_extra/closed_loop_eval.py --benign-s 120 --attack-s 30 --chunk-s 2 --cooldown-s 60
 
 iot-base-rate: ## Fase 3: detección a prevalencia realista + PR-AUC (RUN=run_id)
 	python3 ml_extra/base_rate.py --dataset data/processed/$(RUN)/dataset.csv

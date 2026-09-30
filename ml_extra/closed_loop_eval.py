@@ -137,10 +137,11 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--benign-s", type=int, default=120)
     p.add_argument("--attack-s", type=int, default=40)
-    p.add_argument("--cooldown-s", type=int, default=20)
+    p.add_argument("--cooldown-s", type=int, default=60,
+                   help="pausa entre escenarios; < vigencia de reglas (60 s) deja arrastre del ataque previo")
     p.add_argument("--scenarios", nargs="*", default=SCENARIOS)
     p.add_argument("--out", default="closed_loop.json", help="nombre del JSON en artifacts/")
-    p.add_argument("--chunk-s", type=float, default=5.0, help="ventana de captura en vivo (s)")
+    p.add_argument("--chunk-s", type=float, default=2.0, help="ventana de captura en vivo (s)")
     args = p.parse_args()
 
     catalog = {s["id"]: s for s in yaml.safe_load(

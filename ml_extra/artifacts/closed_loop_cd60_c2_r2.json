@@ -1,10 +1,11 @@
 {
   "attack_s": 30,
   "benign_s": 120,
+  "chunk_s": 2.0,
   "scenarios": {
     "syn_flood": {
       "detected": true,
-      "ttm_s": 9.69,
+      "ttm_s": 4.52,
       "n_actions": 1,
       "n_correct": 1,
       "collateral": 0,
@@ -19,26 +20,25 @@
           },
           "action": "limit",
           "label": "SYN_FLOOD",
-          "n_flows": 19926,
+          "n_flows": 19874,
           "reason": "distributed",
-          "latency_s": 8.738,
-          "t_rel": 9.69
+          "latency_s": 4.35,
+          "t_rel": 4.52
         }
       ],
       "victim": {
-        "baseline_pps": 432.2,
-        "peak_pps_pre": 141947.4,
-        "mean_pps_post": 441.9,
-        "reduction_pct": 99.7
+        "baseline_pps": 415.2,
+        "peak_pps_pre": 221024.9,
+        "mean_pps_post": null
       },
       "first_label": "SYN_FLOOD",
       "attribution_ok": true
     },
     "udp_flood": {
       "detected": true,
-      "ttm_s": 4.04,
-      "n_actions": 3,
-      "n_correct": 3,
+      "ttm_s": 2.81,
+      "n_actions": 2,
+      "n_correct": 2,
       "collateral": 0,
       "labels": [
         "UDP_FLOOD"
@@ -50,22 +50,10 @@
           },
           "action": "drop",
           "label": "UDP_FLOOD",
-          "n_flows": 256,
+          "n_flows": 321,
           "reason": "source",
-          "latency_s": 1.106,
-          "t_rel": 4.04
-        },
-        {
-          "match": {
-            "src_ip": "10.10.0.11",
-            "dst_ip": "10.10.0.99"
-          },
-          "action": "limit",
-          "label": "UDP_FLOOD",
-          "n_flows": 48,
-          "reason": "source",
-          "latency_s": 0.795,
-          "t_rel": 8.73
+          "latency_s": 1.516,
+          "t_rel": 2.81
         },
         {
           "match": {
@@ -73,16 +61,16 @@
           },
           "action": "drop",
           "label": "UDP_FLOOD",
-          "n_flows": 2301,
+          "n_flows": 2048,
           "reason": "source",
-          "latency_s": 1.391,
-          "t_rel": 34.33
+          "latency_s": 1.243,
+          "t_rel": 34.54
         }
       ],
       "victim": {
-        "baseline_pps": 3.0,
-        "peak_pps_pre": 66912.9,
-        "mean_pps_post": 2.5,
+        "baseline_pps": 2.5,
+        "peak_pps_pre": 111299.0,
+        "mean_pps_post": 2.3,
         "reduction_pct": 100.0
       },
       "first_label": "UDP_FLOOD",
@@ -90,9 +78,9 @@
     },
     "icmp_flood": {
       "detected": true,
-      "ttm_s": 2.64,
-      "n_actions": 1,
-      "n_correct": 1,
+      "ttm_s": 1.69,
+      "n_actions": 2,
+      "n_correct": 2,
       "collateral": 0,
       "labels": [
         "ICMP_FLOOD"
@@ -105,24 +93,36 @@
           },
           "action": "limit",
           "label": "ICMP_FLOOD",
-          "n_flows": 507,
+          "n_flows": 250,
           "reason": "distributed",
-          "latency_s": 0.922,
-          "t_rel": 2.64
+          "latency_s": 1.593,
+          "t_rel": 1.69
+        },
+        {
+          "match": {
+            "dst_ip": "10.10.0.12",
+            "ip_proto": 1
+          },
+          "action": "limit",
+          "label": "ICMP_FLOOD",
+          "n_flows": 487,
+          "reason": "distributed",
+          "latency_s": 1.355,
+          "t_rel": 33.46
         }
       ],
       "victim": {
-        "baseline_pps": 398.6,
-        "peak_pps_pre": 2845.5,
-        "mean_pps_post": 543.1,
-        "reduction_pct": 80.9
+        "baseline_pps": 437.7,
+        "peak_pps_pre": 2907.3,
+        "mean_pps_post": 550.1,
+        "reduction_pct": 81.1
       },
       "first_label": "ICMP_FLOOD",
       "attribution_ok": true
     },
     "http_flood": {
       "detected": true,
-      "ttm_s": 1.23,
+      "ttm_s": 2.47,
       "n_actions": 2,
       "n_correct": 2,
       "collateral": 0,
@@ -137,10 +137,10 @@
           },
           "action": "drop",
           "label": "HTTP_FLOOD",
-          "n_flows": 495,
+          "n_flows": 546,
           "reason": "source",
-          "latency_s": 0.711,
-          "t_rel": 1.23
+          "latency_s": 1.566,
+          "t_rel": 2.47
         },
         {
           "match": {
@@ -148,57 +148,26 @@
           },
           "action": "drop",
           "label": "MIRAI_COORDINATED",
-          "n_flows": 1578,
+          "n_flows": 1638,
           "reason": "source",
-          "latency_s": 1.477,
-          "t_rel": 32.0
+          "latency_s": 2.012,
+          "t_rel": 32.91
         }
       ],
       "victim": {
-        "baseline_pps": 412.1,
-        "peak_pps_pre": 14928.0,
-        "mean_pps_post": 423.4,
-        "reduction_pct": 97.2
+        "baseline_pps": 398.7,
+        "peak_pps_pre": 9056.5,
+        "mean_pps_post": 413.8,
+        "reduction_pct": 95.4
       },
       "first_label": "HTTP_FLOOD",
       "attribution_ok": true
     },
     "slowloris": {
       "detected": true,
-      "ttm_s": 18.91,
-      "n_actions": 1,
-      "n_correct": 1,
-      "collateral": 0,
-      "labels": [
-        "MQTT_SUBSCRIBE_FLOOD"
-      ],
-      "actions": [
-        {
-          "match": {
-            "src_ip": "10.10.0.99"
-          },
-          "action": "drop",
-          "label": "MQTT_SUBSCRIBE_FLOOD",
-          "n_flows": 519,
-          "reason": "source",
-          "latency_s": 1.071,
-          "t_rel": 18.91
-        }
-      ],
-      "victim": {
-        "baseline_pps": 418.9,
-        "peak_pps_pre": 1659.4,
-        "mean_pps_post": 296.1,
-        "reduction_pct": 82.2
-      },
-      "first_label": "MQTT_SUBSCRIBE_FLOOD",
-      "attribution_ok": false
-    },
-    "port_scan": {
-      "detected": true,
-      "ttm_s": 27.87,
-      "n_actions": 1,
-      "n_correct": 1,
+      "ttm_s": 6.4,
+      "n_actions": 2,
+      "n_correct": 2,
       "collateral": 0,
       "labels": [
         "MIRAI_COORDINATED"
@@ -210,20 +179,73 @@
           },
           "action": "drop",
           "label": "MIRAI_COORDINATED",
-          "n_flows": 66,
+          "n_flows": 5,
           "reason": "source",
-          "latency_s": 1.217,
-          "t_rel": 27.87
+          "latency_s": 0.806,
+          "t_rel": 6.4
+        },
+        {
+          "match": {
+            "src_ip": "10.10.0.99"
+          },
+          "action": "drop",
+          "label": "MIRAI_COORDINATED",
+          "n_flows": 11,
+          "reason": "source",
+          "latency_s": 0.461,
+          "t_rel": 38.05
         }
       ],
+      "victim": {
+        "baseline_pps": 432.5,
+        "peak_pps_pre": 454.9,
+        "mean_pps_post": 411.5,
+        "reduction_pct": 9.5
+      },
       "first_label": "MIRAI_COORDINATED",
       "attribution_ok": false
     },
+    "port_scan": {
+      "detected": true,
+      "ttm_s": 3.68,
+      "n_actions": 2,
+      "n_correct": 2,
+      "collateral": 0,
+      "labels": [
+        "PORT_SCAN"
+      ],
+      "actions": [
+        {
+          "match": {
+            "src_ip": "10.10.0.99"
+          },
+          "action": "limit",
+          "label": "PORT_SCAN",
+          "n_flows": 19,
+          "reason": "source",
+          "latency_s": 1.296,
+          "t_rel": 3.68
+        },
+        {
+          "match": {
+            "src_ip": "10.10.0.99"
+          },
+          "action": "limit",
+          "label": "PORT_SCAN",
+          "n_flows": 77,
+          "reason": "source",
+          "latency_s": 0.778,
+          "t_rel": 35.16
+        }
+      ],
+      "first_label": "PORT_SCAN",
+      "attribution_ok": true
+    },
     "dns_amplification": {
       "detected": true,
-      "ttm_s": 1.75,
-      "n_actions": 1,
-      "n_correct": 1,
+      "ttm_s": 1.88,
+      "n_actions": 2,
+      "n_correct": 2,
       "collateral": 0,
       "labels": [
         "DNS_AMPLIFICATION"
@@ -237,26 +259,39 @@
           },
           "action": "limit",
           "label": "DNS_AMPLIFICATION",
-          "n_flows": 572,
+          "n_flows": 1628,
           "reason": "distributed",
-          "latency_s": 1.509,
-          "t_rel": 1.75
+          "latency_s": 0.989,
+          "t_rel": 1.88
+        },
+        {
+          "match": {
+            "dst_ip": "10.10.0.13",
+            "ip_proto": 17,
+            "tp_dst": 53
+          },
+          "action": "limit",
+          "label": "DNS_AMPLIFICATION",
+          "n_flows": 5380,
+          "reason": "distributed",
+          "latency_s": 2.129,
+          "t_rel": 33.02
         }
       ],
       "victim": {
         "baseline_pps": 0.5,
-        "peak_pps_pre": 1171.1,
-        "mean_pps_post": 114.4,
-        "reduction_pct": 90.2
+        "peak_pps_pre": 1329.4,
+        "mean_pps_post": 114.2,
+        "reduction_pct": 91.4
       },
       "first_label": "DNS_AMPLIFICATION",
       "attribution_ok": true
     },
     "coap_amplification": {
       "detected": true,
-      "ttm_s": 6.22,
-      "n_actions": 6,
-      "n_correct": 6,
+      "ttm_s": 0.92,
+      "n_actions": 9,
+      "n_correct": 9,
       "collateral": 0,
       "labels": [
         "COAP_AMPLIFICATION"
@@ -270,10 +305,10 @@
           },
           "action": "limit",
           "label": "COAP_AMPLIFICATION",
-          "n_flows": 3518,
+          "n_flows": 57,
           "reason": "distributed",
-          "latency_s": 2.195,
-          "t_rel": 6.22
+          "latency_s": 1.235,
+          "t_rel": 0.92
         },
         {
           "match": {
@@ -286,80 +321,121 @@
           "label": "COAP_AMPLIFICATION",
           "n_flows": 15,
           "reason": "source",
-          "latency_s": 2.203,
-          "t_rel": 6.23
+          "latency_s": 1.282,
+          "t_rel": 4.96
         },
         {
           "match": {
             "src_ip": "10.10.0.11",
-            "dst_ip": "10.10.1.10",
+            "dst_ip": "10.10.1.14",
             "ip_proto": 17,
-            "tp_dst": 40051
+            "tp_dst": 40009
           },
           "action": "limit",
           "label": "COAP_AMPLIFICATION",
-          "n_flows": 53,
+          "n_flows": 43,
           "reason": "source",
-          "latency_s": 1.51,
-          "t_rel": 20.53
+          "latency_s": 1.714,
+          "t_rel": 15.4
         },
         {
           "match": {
-            "src_ip": "10.10.0.11",
-            "dst_ip": "10.10.1.16",
+            "src_ip": "10.10.1.10",
+            "dst_ip": "10.10.0.11",
             "ip_proto": 17,
-            "tp_dst": 40015
+            "tp_dst": 5683
           },
           "action": "limit",
           "label": "COAP_AMPLIFICATION",
-          "n_flows": 53,
+          "n_flows": 18,
           "reason": "source",
-          "latency_s": 2.289,
-          "t_rel": 26.31
+          "latency_s": 1.755,
+          "t_rel": 19.44
         },
         {
           "match": {
             "src_ip": "10.10.0.11",
-            "dst_ip": "10.10.1.12",
+            "dst_ip": "10.10.1.11",
+            "ip_proto": 17,
+            "tp_dst": 40028
+          },
+          "action": "limit",
+          "label": "COAP_AMPLIFICATION",
+          "n_flows": 61,
+          "reason": "source",
+          "latency_s": 1.381,
+          "t_rel": 25.06
+        },
+        {
+          "match": {
+            "dst_ip": "10.10.0.11",
+            "ip_proto": 17,
+            "tp_dst": 5683
+          },
+          "action": "limit",
+          "label": "COAP_AMPLIFICATION",
+          "n_flows": 3934,
+          "reason": "distributed",
+          "latency_s": 1.238,
+          "t_rel": 30.92
+        },
+        {
+          "match": {
+            "src_ip": "10.10.0.11",
+            "dst_ip": "10.10.1.14",
+            "ip_proto": 17,
+            "tp_dst": 40011
+          },
+          "action": "limit",
+          "label": "COAP_AMPLIFICATION",
+          "n_flows": 70,
+          "reason": "source",
+          "latency_s": 1.243,
+          "t_rel": 30.93
+        },
+        {
+          "match": {
+            "src_ip": "10.10.0.11",
+            "dst_ip": "10.10.1.19",
+            "ip_proto": 17,
+            "tp_dst": 40062
+          },
+          "action": "limit",
+          "label": "COAP_AMPLIFICATION",
+          "n_flows": 67,
+          "reason": "source",
+          "latency_s": 1.239,
+          "t_rel": 32.92
+        },
+        {
+          "match": {
+            "src_ip": "10.10.0.11",
+            "dst_ip": "10.10.1.14",
             "ip_proto": 17,
             "tp_dst": 40035
           },
           "action": "limit",
           "label": "COAP_AMPLIFICATION",
-          "n_flows": 52,
+          "n_flows": 71,
           "reason": "source",
-          "latency_s": 2.037,
-          "t_rel": 31.06
-        },
-        {
-          "match": {
-            "src_ip": "10.10.0.11",
-            "dst_ip": "10.10.1.15",
-            "ip_proto": 17,
-            "tp_dst": 40018
-          },
-          "action": "limit",
-          "label": "COAP_AMPLIFICATION",
-          "n_flows": 41,
-          "reason": "source",
-          "latency_s": 1.66,
-          "t_rel": 35.68
+          "latency_s": 1.01,
+          "t_rel": 36.69
         }
       ],
       "victim": {
         "baseline_pps": 2.0,
-        "peak_pps_pre": 833.7,
-        "mean_pps_post": 168.6,
-        "reduction_pct": 79.8
+        "peak_pps_pre": 801.7,
+        "mean_pps_post": 170.6,
+        "reduction_pct": 78.7
       },
       "first_label": "COAP_AMPLIFICATION",
       "attribution_ok": true
     },
     "ssdp_amplification": {
       "detected": true,
-      "ttm_s": 4.03,
-      "n_actions": 7,
-      "n_correct": 7,
+      "ttm_s": 1.89,
+      "n_actions": 8,
+      "n_correct": 8,
       "collateral": 0,
       "labels": [
         "SSDP_AMPLIFICATION"
@@ -373,66 +449,66 @@
           },
           "action": "limit",
           "label": "SSDP_AMPLIFICATION",
-          "n_flows": 3474,
+          "n_flows": 1053,
           "reason": "distributed",
-          "latency_s": 1.178,
-          "t_rel": 4.03
+          "latency_s": 1.415,
+          "t_rel": 1.89
         },
         {
           "match": {
             "src_ip": "10.10.0.15",
-            "dst_ip": "10.10.4.14",
+            "dst_ip": "10.10.4.15",
             "ip_proto": 17,
-            "tp_dst": 50011
+            "tp_dst": 50012
           },
           "action": "limit",
           "label": "SSDP_AMPLIFICATION",
           "n_flows": 8,
           "reason": "source",
-          "latency_s": 1.184,
-          "t_rel": 4.04
+          "latency_s": 1.802,
+          "t_rel": 6.28
         },
         {
           "match": {
             "src_ip": "10.10.0.15",
-            "dst_ip": "10.10.4.15",
+            "dst_ip": "10.10.4.13",
             "ip_proto": 17,
-            "tp_dst": 50050
+            "tp_dst": 50048
           },
           "action": "limit",
           "label": "SSDP_AMPLIFICATION",
-          "n_flows": 21,
+          "n_flows": 15,
           "reason": "source",
-          "latency_s": 1.316,
-          "t_rel": 14.17
+          "latency_s": 1.575,
+          "t_rel": 24.05
         },
         {
           "match": {
             "src_ip": "10.10.0.15",
-            "dst_ip": "10.10.4.11",
+            "dst_ip": "10.10.4.17",
             "ip_proto": 17,
-            "tp_dst": 50046
+            "tp_dst": 50026
           },
           "action": "limit",
           "label": "SSDP_AMPLIFICATION",
-          "n_flows": 28,
+          "n_flows": 15,
           "reason": "source",
-          "latency_s": 1.54,
-          "t_rel": 24.39
+          "latency_s": 1.755,
+          "t_rel": 28.23
         },
         {
           "match": {
             "src_ip": "10.10.0.15",
-            "dst_ip": "10.10.4.15",
+            "dst_ip": "10.10.4.13",
             "ip_proto": 17,
-            "tp_dst": 50036
+            "tp_dst": 50058
           },
           "action": "limit",
           "label": "SSDP_AMPLIFICATION",
-          "n_flows": 24,
+          "n_flows": 12,
           "reason": "source",
-          "latency_s": 1.489,
-          "t_rel": 29.34
+          "latency_s": 1.834,
+          "t_rel": 30.31
         },
         {
           "match": {
@@ -442,38 +518,52 @@
           },
           "action": "limit",
           "label": "SSDP_AMPLIFICATION",
-          "n_flows": 1970,
+          "n_flows": 4175,
           "reason": "distributed",
-          "latency_s": 1.457,
-          "t_rel": 34.31
+          "latency_s": 1.854,
+          "t_rel": 32.33
         },
         {
           "match": {
             "src_ip": "10.10.0.15",
             "dst_ip": "10.10.4.10",
             "ip_proto": 17,
-            "tp_dst": 50007
+            "tp_dst": 50025
           },
           "action": "limit",
           "label": "SSDP_AMPLIFICATION",
-          "n_flows": 28,
+          "n_flows": 7,
           "reason": "source",
-          "latency_s": 1.464,
-          "t_rel": 34.32
+          "latency_s": 1.548,
+          "t_rel": 34.02
+        },
+        {
+          "match": {
+            "src_ip": "10.10.0.15",
+            "dst_ip": "10.10.4.12",
+            "ip_proto": 17,
+            "tp_dst": 50057
+          },
+          "action": "limit",
+          "label": "SSDP_AMPLIFICATION",
+          "n_flows": 5,
+          "reason": "source",
+          "latency_s": 1.693,
+          "t_rel": 36.17
         }
       ],
       "victim": {
-        "baseline_pps": 0.5,
-        "peak_pps_pre": 1106.5,
-        "mean_pps_post": 59.7,
-        "reduction_pct": 94.6
+        "baseline_pps": 1.0,
+        "peak_pps_pre": 1035.4,
+        "mean_pps_post": 60.6,
+        "reduction_pct": 94.1
       },
       "first_label": "SSDP_AMPLIFICATION",
       "attribution_ok": true
     },
     "mqtt_subscribe_flood": {
       "detected": true,
-      "ttm_s": 2.8,
+      "ttm_s": 2.64,
       "n_actions": 2,
       "n_correct": 2,
       "collateral": 0,
@@ -488,10 +578,10 @@
           },
           "action": "drop",
           "label": "MQTT_MALFORMED",
-          "n_flows": 302,
+          "n_flows": 268,
           "reason": "source",
-          "latency_s": 1.138,
-          "t_rel": 2.8
+          "latency_s": 1.386,
+          "t_rel": 2.64
         },
         {
           "match": {
@@ -499,24 +589,24 @@
           },
           "action": "drop",
           "label": "MQTT_SUBSCRIBE_FLOOD",
-          "n_flows": 511,
+          "n_flows": 481,
           "reason": "source",
-          "latency_s": 1.639,
-          "t_rel": 33.3
+          "latency_s": 2.089,
+          "t_rel": 33.35
         }
       ],
       "victim": {
-        "baseline_pps": 27.4,
-        "peak_pps_pre": 956.4,
-        "mean_pps_post": 26.7,
-        "reduction_pct": 97.2
+        "baseline_pps": 26.4,
+        "peak_pps_pre": 973.6,
+        "mean_pps_post": 25.5,
+        "reduction_pct": 97.4
       },
       "first_label": "MQTT_MALFORMED",
       "attribution_ok": false
     },
     "mqtt_malformed": {
       "detected": true,
-      "ttm_s": 10.88,
+      "ttm_s": 2.54,
       "n_actions": 1,
       "n_correct": 1,
       "collateral": 0,
@@ -530,16 +620,16 @@
           },
           "action": "drop",
           "label": "MQTT_MALFORMED",
-          "n_flows": 11493,
+          "n_flows": 1931,
           "reason": "source",
-          "latency_s": 1.378,
-          "t_rel": 10.88
+          "latency_s": 1.484,
+          "t_rel": 2.54
         }
       ],
       "victim": {
-        "baseline_pps": 29.3,
-        "peak_pps_pre": 8228.6,
-        "mean_pps_post": 25.6,
+        "baseline_pps": 23.9,
+        "peak_pps_pre": 7408.3,
+        "mean_pps_post": 24.8,
         "reduction_pct": 99.7
       },
       "first_label": "MQTT_MALFORMED",
@@ -547,12 +637,13 @@
     },
     "credential_bruteforce": {
       "detected": true,
-      "ttm_s": 11.71,
-      "n_actions": 1,
-      "n_correct": 1,
+      "ttm_s": 1.99,
+      "n_actions": 2,
+      "n_correct": 2,
       "collateral": 0,
       "labels": [
-        "CREDENTIAL_BRUTEFORCE"
+        "CREDENTIAL_BRUTEFORCE",
+        "MIRAI_COORDINATED"
       ],
       "actions": [
         {
@@ -561,10 +652,21 @@
           },
           "action": "drop",
           "label": "CREDENTIAL_BRUTEFORCE",
-          "n_flows": 19955,
+          "n_flows": 6926,
           "reason": "source",
-          "latency_s": 9.158,
-          "t_rel": 11.71
+          "latency_s": 2.613,
+          "t_rel": 1.99
+        },
+        {
+          "match": {
+            "src_ip": "10.10.0.99"
+          },
+          "action": "drop",
+          "label": "MIRAI_COORDINATED",
+          "n_flows": 3336,
+          "reason": "source",
+          "latency_s": 0.767,
+          "t_rel": 33.14
         }
       ],
       "first_label": "CREDENTIAL_BRUTEFORCE",
@@ -572,7 +674,7 @@
     },
     "mirai_coordinated": {
       "detected": true,
-      "ttm_s": 3.37,
+      "ttm_s": 2.01,
       "n_actions": 2,
       "n_correct": 2,
       "collateral": 0,
@@ -587,10 +689,10 @@
           },
           "action": "limit",
           "label": "MIRAI_COORDINATED",
-          "n_flows": 12683,
+          "n_flows": 10347,
           "reason": "distributed",
-          "latency_s": 2.132,
-          "t_rel": 3.37
+          "latency_s": 0.868,
+          "t_rel": 2.01
         },
         {
           "match": {
@@ -599,17 +701,17 @@
           },
           "action": "limit",
           "label": "MIRAI_COORDINATED",
-          "n_flows": 18253,
+          "n_flows": 18399,
           "reason": "distributed",
-          "latency_s": 2.233,
+          "latency_s": 2.331,
           "t_rel": 33.47
         }
       ],
       "victim": {
-        "baseline_pps": 413.6,
-        "peak_pps_pre": 8867.9,
-        "mean_pps_post": 438.8,
-        "reduction_pct": 95.1
+        "baseline_pps": 426.4,
+        "peak_pps_pre": 9461.1,
+        "mean_pps_post": 440.3,
+        "reduction_pct": 95.3
       },
       "first_label": "MIRAI_COORDINATED",
       "attribution_ok": true
@@ -623,14 +725,14 @@
   "summary": {
     "scenarios": 13,
     "detected": 13,
-    "ttm_median_s": 4.04,
-    "ttm_max_s": 27.87,
+    "ttm_median_s": 2.47,
+    "ttm_max_s": 6.4,
     "benign_false_actions": 0,
     "collateral_actions": 0,
-    "rules_correct": 29,
-    "rules_total": 29,
-    "attribution_correct": 10,
-    "reduction_median_pct": 95.1,
-    "reduction_min_pct": 79.8
+    "rules_correct": 37,
+    "rules_total": 37,
+    "attribution_correct": 11,
+    "reduction_median_pct": 95.3,
+    "reduction_min_pct": 9.5
   }
 }

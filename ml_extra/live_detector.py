@@ -271,7 +271,7 @@ def main() -> None:
     p.add_argument("--live-dir", type=Path, default=ROOT / "data" / "live")
     p.add_argument("--controller", default="http://localhost:8080")
     p.add_argument("--thr", type=float, default=None, help="umbral P(ataque) XGB")
-    p.add_argument("--chunk-s", type=float, default=5.0)
+    p.add_argument("--chunk-s", type=float, default=2.0)
     p.add_argument("--dry-run", action="store_true", help="no llama al controlador")
     args = p.parse_args()
 

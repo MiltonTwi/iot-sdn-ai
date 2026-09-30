@@ -277,3 +277,32 @@ MQTT malf 17,4±11,3 (2/5) · Bruteforce 11,8±3,0 (5/5) · Mirai 3,2±1,9 (5/5)
 MQTT_MALFORMED apenas superó la base del broker (pico ≈ 33 pps vs ≈ 25) → reducción no medible
 (detectado y mitigado igual). Los errores de atribución son sistemáticos (slowloris, scan,
 MQTT sub), la acción aplicada fue correcta en todos.
+
+## Lazo cerrado optimizado y comparación limpia (HECHO 2026-10-01) — SUPERSEDE las 5 corridas
+
+**Defecto de medición encontrado:** con pausas de 20 s entre escenarios, las retransmisiones
+del ataque previo (mismo atacante) disparaban la mitigación antes del nuevo ataque → TTM
+artificiales (hasta 0,07 s) y etiqueta de la clase previa. Afectaba también a las 5 corridas
+anteriores (p. ej. MQTT_MALFORMED "no medible" era arrastre de MQTT_SUB), que se retiraron.
+Todas las cifras vigentes usan `COOLDOWN=60` (> vigencia de las reglas).
+
+**Optimizaciones (commit fe9a439):** ventana en vivo de 2 s con snapshot de 5 s de flujos
+(features idénticas a entrenamiento), muestreo a 20 k tras las features y antes de sshfs,
+RF atribuye ≤ 2 k flujos, evidencia por origen = flujos distintos en 15 s de captura.
+
+| Métrica (3 corridas c/u, pausa 60 s) | Ventana 5 s | Ventana 2 s |
+|---|---|---|
+| Detectados y mitigados | 39/39 | 39/39 |
+| Falsas alarmas | 0 (360 s) | 0 (960 s, incl. 600 s benignos continuos) |
+| Reglas correctas / colaterales | 155/155 / 0 | 243/243 / 0 |
+| TTM mediana / máx | 4,7 s / 8,5 s | **2,5 s** / 7,5 s |
+| Mediana por corrida | 4,8 ± 0,4 s | 2,6 ± 0,4 s |
+| Reducción mediana / mín | 94,6 % / 78,2 % | 95,2 % / 78,1 % |
+| Atribución | 33/39 | 33/39 |
+
+Por escenario, TTM 5 s → 2 s: SYN 7,3→5,5 · UDP 3,4→3,0 · ICMP 1,8→2,3 · HTTP 3,9→2,0 ·
+Slowloris 7,9→6,3 · Scan 4,9→2,7 · DNS 5,3→1,8 · CoAP 4,2→1,7 · SSDP 2,9→2,3 ·
+MQTT sub 4,8→3,2 · MQTT malf 3,9→2,1 · Bruteforce 7,0→4,4 · Mirai 3,4→2,1.
+Límite restante: el SYN flood (~200 k pps) satura el extractor en Python.
+Artefactos: `closed_loop_cd60_c{5,2}_r{1..3}.json`, `closed_loop_cd60_c{5,2}_reps.json`,
+`closed_loop_c2_benign600.json`.

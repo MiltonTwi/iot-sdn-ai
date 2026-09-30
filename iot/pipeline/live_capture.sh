@@ -67,7 +67,7 @@ loop() {
 
 case "${1:-}" in
   start)
-    CHUNK="${2:-5}"
+    CHUNK="${2:-2}"
     stop >/dev/null
     mkdir -p "$WORK" "$OUT"; rm -f "$WORK"/* "$WORK"/.flows.tmp "$OUT"/feat_*.csv
     bash "$HERE/mirror.sh" setup "$BR" "$MON"

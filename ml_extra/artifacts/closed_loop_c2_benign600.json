@@ -1,0 +1,19 @@
+{
+  "attack_s": 40,
+  "benign_s": 600,
+  "chunk_s": 2.0,
+  "scenarios": {},
+  "benign": {
+    "duration_s": 600,
+    "false_actions": 0,
+    "actions": []
+  },
+  "summary": {
+    "scenarios": 0,
+    "detected": 0,
+    "ttm_median_s": null,
+    "ttm_max_s": null,
+    "benign_false_actions": 0,
+    "collateral_actions": 0
+  }
+}

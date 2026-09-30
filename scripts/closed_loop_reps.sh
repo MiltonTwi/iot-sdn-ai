@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Repite el experimento de lazo cerrado y re-puntúa cada corrida.
 #   bash scripts/closed_loop_reps.sh N [PRIMERA]      (defaults: 5, 2 → r2..rN; r1 = corrida original)
-# Variables: CHUNK (ventana en vivo, s; 5), PREFIX (closed_loop_r), BENIGN_S (120),
-#   COOLDOWN (pausa entre escenarios, s; 20 — usar ≥ 60 para evitar arrastre del ataque previo)
+# Variables: CHUNK (ventana en vivo, s; 2), PREFIX (closed_loop_r), BENIGN_S (120),
+#   COOLDOWN (pausa entre escenarios, s; 60 — con menos, el ataque previo contamina el siguiente)
 set -u
 cd "$(dirname "$0")/.."
 N=${1:-5}; FIRST=${2:-2}
-CHUNK=${CHUNK:-5}; PREFIX=${PREFIX:-closed_loop_r}; BENIGN_S=${BENIGN_S:-120}; COOLDOWN=${COOLDOWN:-20}
+CHUNK=${CHUNK:-2}; PREFIX=${PREFIX:-closed_loop_r}; BENIGN_S=${BENIGN_S:-120}; COOLDOWN=${COOLDOWN:-60}
 for i in $(seq "$FIRST" "$N"); do
   echo "=== repeticion $i/$N chunk=${CHUNK}s $(date +%T)"
   python3 -u ml_extra/closed_loop_eval.py --benign-s "$BENIGN_S" --attack-s 30 --chunk-s "$CHUNK" --cooldown-s "$COOLDOWN" \

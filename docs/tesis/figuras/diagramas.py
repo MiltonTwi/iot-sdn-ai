@@ -123,7 +123,7 @@ def lazo():
     y = 3.4
     steps = [(1.1, "Red IoT emulada\n(Mininet + OVS)", C_HOST),
              (3.4, "Captura continua\ntcpdump (espejo\ns_iot_0)", C_NET),
-             (5.7, "Extractor en vivo\nsnapshots cada 5 s\n+ 50 características", C_HOST),
+             (5.7, "Extractor en vivo\ncada 2 s (5 s de flujos)\n+ 50 características", C_HOST),
              (8.0, "Etapa 1: XGBoost\ndetección\n(2 umbrales)", C_ML),
              (10.3, "Etapa 2: Random Forest\natribución del tipo", C_ML)]
     for x, t, c in steps:
@@ -141,8 +141,8 @@ def lazo():
     arrow(ax, (6.9 - 1.12, 1.35), (3.5 + 1.22, 1.35))
     arrow(ax, (3.5 - 1.22, 1.35), (1.1, y - 0.52), rad=-0.25, label="contención", lpos=0.45,
           loff=(-0.45, 0))
-    ax.text(6.0, 0.25, "Resultado (5 corridas): 65/65 ataques mitigados · TTM mediana 5,3 s · 0 falsas alarmas · "
-            "reducción mediana 94,6 %", ha="center", fontsize=8.5, style="italic", color="#333333")
+    ax.text(6.0, 0.25, "Resultado: 100 % de ataques mitigados · TTM mediana 2,5 s · 0 falsas alarmas · "
+            "reducción mediana 95,2 %", ha="center", fontsize=8.5, style="italic", color="#333333")
     fig.savefig(OUT / "lazo_cerrado.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
 
