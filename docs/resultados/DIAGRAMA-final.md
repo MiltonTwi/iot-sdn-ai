@@ -8,7 +8,7 @@
                            │ generate_topology.py
                            ▼
 ┌──────────────────────────────────────────────────────────────────────┐
-│  network_config.iot.yaml   (auto-generado, 10 sw + 70 hosts)         │
+│  network_config.iot.yaml   (auto-generado, 10 sw + 67 hosts)         │
 └──────────────────────────┬───────────────────────────────────────────┘
                            │ mn_iot_topo.py --auto-traffic
                            ▼
@@ -16,7 +16,7 @@
 │            DOCKER STACK (SdnShare + override)                        │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────┐ │
 │  │ controller   │  │ mininet      │  │ prom+grafana │  │ dashboard│ │
-│  │ Ryu+FlowMgr  │◀─│ 70 hosts     │─▶│ + alerts IoT │  │ FastAPI  │ │
+│  │ Ryu+FlowMgr  │◀─│ 67 hosts     │─▶│ + alerts IoT │  │ FastAPI  │ │
 │  │ :8080        │  │ 14 attackers │  │ :3000 :9090  │  │ :8000 WS │ │
 │  └──────────────┘  └──────┬───────┘  └──────────────┘  └────┬─────┘ │
 └────────────────────────────┼─────────────────────────────────┼──────┘
