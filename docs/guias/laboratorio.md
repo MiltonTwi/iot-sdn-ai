@@ -1,5 +1,7 @@
 # IoT-SDN-AI Lab
 
+[English](laboratorio.en.md) · **Español**
+
 Laboratorio para **detección de ataques IoT con AI sobre SDN**, construido como overlay del repo base [SdnShare](https://github.com/JosephRodriri/SdnShare).
 
 - **67 hosts** (60 dispositivos IoT en 7 zonas + 6 servidores + 1 atacante)

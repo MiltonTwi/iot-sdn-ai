@@ -1,5 +1,7 @@
 # Documentación
 
+[English](README.en.md) · **Español**
+
 | Carpeta | Contenido |
 |---|---|
 | [`pasos/`](pasos) | Construcción del laboratorio, del PASO-01 (arquitectura) al PASO-15 (validación cruzada externa) |

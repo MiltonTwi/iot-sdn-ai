@@ -1,5 +1,7 @@
 # Resultados finales — IoT-SDN-AI
 
+[English](RESULTADOS-FINAL.en.md) · **Español**
+
 **Cifras vigentes (octubre 2026).** Este resumen manda; las secciones siguientes son el
 registro cronológico del trabajo y algunas quedaron superadas (se indica en su título).
 

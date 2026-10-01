@@ -1,5 +1,7 @@
 # IoT-SDN-AI: detección y mitigación automática de ataques IoT con aprendizaje automático sobre SDN
 
+[English](README.en.md) · **Español**
+
 Laboratorio reproducible que **emula una red IoT de 67 hosts sobre SDN, genera tráfico benigno y 14 escenarios de ataque, entrena modelos de detección y los conecta al controlador para mitigar ataques en lazo cerrado, sin intervención humana**.
 
 Proyecto de trabajo de grado — Ingeniería de Sistemas, Universidad Cooperativa de Colombia (2026).
